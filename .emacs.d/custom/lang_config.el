@@ -1,4 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;
 ;; Language Supports ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -9,32 +9,21 @@
 (with-eval-after-load 'project
   (add-to-list 'project-find-functions
 	       'nick/projectile-proj-find-function))
+
 (setq company-backends
       (cons 'company-capf
 	    (remove 'company-capf company-backends)))
 
-;;(defvar verilator (executable-find "verilator")
-;;  "Verilator executable path")
-(defvar xvlog (executable-find "xvlog")
-  "xvlog executable path")
-
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode)
-  :config
-  (setq flycheck-verilog-verilator-executable "/usr/bin/verilator_bin"))
+  :init (global-flycheck-mode))
 
 (use-package verilog-mode
   :ensure t
   :config
-  (add-hook 'verilog-mode-hook '(lambda ()
-				  (setq compilation-error-regexp-alist (delete 'gnu compilation-error-regexp-alist))))
-  (setq verilog-tool 'verilog-linter
-	verilog-linter "usr/bin/verilator_bin --lint-only --sv --Wall -I ./cpu_pkg.sv __FILE__"
-	verilog-coverage "iverilog"
-	verilog-simulator "vvp"
-	verilog-compiler "iverilog"
-	verilog-indent-level 4
+;;  (add-hook 'verilog-mode-hook '(lambda ()
+;;				  (setq compilation-error-regexp-alist (delete 'gnu compilation-error-regexp-alist))))
+  (setq verilog-indent-level 4
 	verilog-indent-level-behavioral 4
 	verilog-indent-level-declaration 4
 	verilog-indent-level-directive 4
@@ -44,18 +33,19 @@
 (use-package lsp-mode
   :ensure t
   :commands lsp
+  :hook (
+	 (prog-major-mode . lsp-prog-major-mode-enable)
+	 (vhdl-mode . lsp)
+	 (verilog-mode . lsp)
+	 (c++-mode . lsp)
+	 (c-mode . lsp)
+	 (python-mode . lsp))
   :config
   (setq lsp-prefer-flymake nil)
-  (add-hook 'prog-major-mode #'lsp-prog-major-mode-enable)
-  (add-hook 'vhdl-mode-hook #'lsp)
-  (add-hook 'c++-mode-hook #'lsp)
-  (add-hook 'c-mode-hook #'lsp)
-  (add-hook 'python-mode-hook #'lsp)
   (setq lsp-clients-clangd-args '("-j=4" "-background-index" "-log=error")))
 
 (use-package lsp-ui
   :ensure t
-  :requires lsp-mode flycheck
   :commands lsp-ui-mode
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
