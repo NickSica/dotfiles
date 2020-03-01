@@ -197,7 +197,7 @@ bindsym $mod+r mode "resize"
 ##########################
 # Personal Customization #
 ##########################
-output * bg /home/nick/wallhaven-469101.jpg fit
+output * bg /home/nick/greenlantern_bg.jpg fit
 
 ### Doesn't work for some reason
 # gaps inner 28
