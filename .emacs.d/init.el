@@ -21,11 +21,13 @@
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 
-(setq-default cursor-type 'bar)
+;; Other Configs
+(setq make-backup-files nil)
+(setq auto-save-default nil)
 
 ;; Load other config files
+(load "~/.emacs.d/custom/interface.el")
 (load "~/.emacs.d/custom/keybindings.el")
-(load "~/.emacs.d/custom/config.el")
 (load "~/.emacs.d/custom/helm_config.el")
 (load "~/.emacs.d/custom/org_mode.el")
 
@@ -49,25 +51,6 @@
 (defadvice ansi-term (before force-bash)
   (interactive (list "/bin/zsh")))
 (ad-activate 'ansi-term)
-
-;; Evil Mode
-;;(use-package evil
-;;  :ensure t
-;;  :init
-;;  (setq evil-search-module 'evil-search)
-;;  (setq evil-ex-complete-emacs-commands nil)
-;;  (setq evil-vsplit-window-right t)
-;;  (setq evil-split-window-below t)
-;;  (setq evil-shift-round nil)
-;;  (setq evil-want-C-u-scroll t)
-;;  (setq evil-disable-insert-state-bindings t)
-;;  :config
-;;  (evil-mode)
-;;  (defvar my-leader-map (make-sparse-keymap)
-;;    "Keymap for \"leader key\" shortcuts.")
-;;  (define-key evil-normal-state-map "," 'evil-repeat-find-char-reverse)
-;;  (define-key evil-normal-state-map (kbd "SPC") my-leader-map)
-;;  (define-key my-leader-map "w" 'evil-window-vsplit))
 
 ;; Anzu for search matching
 (use-package anzu
@@ -99,9 +82,6 @@
 	     :config
 	     (helm-projectile-on))
 
-;; All The Icons
-(use-package all-the-icons
-	     :ensure t)
 
 ;; Which Key
 (use-package which-key
@@ -158,42 +138,45 @@
 	     (defun company-complete-common-wrapper()
 	       (let((completion-at-point-functions completion-at-point-functions-saved))
 		 (company-complete-common))))
-;; (use-package company-box
-;;   :ensure t
-;;   :hook (company-mode . company-box-mode))
-;; (setq company-box-icons-unknown (all-the-icons-faicon "question-circle"))
-;; (setq company-box-icons-elisp
-;; 	  '((all-the-icons-faicon "tag" :face font-lock-function-name-face) ;; Function
-;; 		(all-the-icons-faicon "cog" :face font-lock-variable-name-face) ;; Variable
-;; 		(all-the-icons-faicon "cube" :face font-lock-constant-face) ;;Feature
-;; 		(all-the-icons-material "color_lens" :face font-lock-doc-face))) ;; Face
-;; (setq company-box-icons-yasnippet (all-the-icons-faicon "bookmark"))
-;; (setq company-box-icons-lsp
-;; 	  '((1 . (all-the-icons-faicon "text-height")) ;; Text
-;; 		(2 . ((all-the-icons-faicon "tags") :face font-lock-function-name-face)) ;; Method
-;; 		(3 . ((all-the-icons-faicon "tag") :face font-lock-function-name-face)) ;; Function
-;; 		(4 . ((all-the-icons-faicon "tag") :face font-lock-function-name-face)) ;; Constructor
-;; 		(5 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Field
-;; 		(6 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Variable
-;; 		(7 . ((all-the-icons-faicon "cube") :foreground "#7C4DFF")) ;; Class
-;; 		(8 . ((all-the-icons-faicon "cube") :foreground "#7C4DFF")) ;; Interface
-;; 		(9 . ((all-the-icons-faicon "cube") :foreground "#7C4DFF")) ;; Module
-;; 		(10 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Property
-;; 		(11 . (all-the-icons-material "settings_system_daydream")) ;; Unit
-;; 		(12 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Value
-;; 		(13 . ((all-the-icons-material "storage") :face font-lock-type-face)) ;; Enum
-;; 		(14 . ((all-the-icons-material "closed_caption") :foreground "#009688")) ;; Keyword
-;; 		(15 . (all-the-icons-material "closed_caption")) ;; Snippet
-;; 		(16 . ((all-the-icons-material "color_lens") :face font-lock-doc-face)) ;; Color
-;; 		(17 . (all-the-icons-faicon "file-text-o")) ;; File
-;; 		(18 . (all-the-icons-material "refresh")) ;; Reference
-;; 		(19 . (all-the-icons-faicon "folder-open")) ;; Folder
-;; 		(20 . ((all-the-icons-material "closed_caption") :foreground "#009688")) ;; EnumMember
-;; 		(21 . ((all-the-icons-faicon "square") :face font-lock-constant-face)) ;; Constant
-;; 		(22 . ((all-the-icons-faicon "cube") :face font-lock-type-face)) ;; Struct
-;; 		(23 . (all-the-icons-faicon "calendar")) ;; Event
-;; 		(24 . (all-the-icons-faicon "square-o")) ;; Operator
-;; 		(25 . (all-the-icons-faicon "arrows")))) ;;TypeParameter
+
+(use-package company-box
+  :ensure t
+  :hook
+  (company-mode . company-box-mode))
+  :init
+  (setq company-box-icons-unknown (all-the-icons-faicon "question-circle"))
+  (setq company-box-icons-elisp
+		'((all-the-icons-faicon "tag" :face font-lock-function-name-face) ;; Function
+		  (all-the-icons-faicon "cog" :face font-lock-variable-name-face) ;; Variable
+		  (all-the-icons-faicon "cube" :face font-lock-constant-face) ;;Feature
+		  (all-the-icons-material "color_lens" :face font-lock-doc-face))) ;; Face
+  (setq company-box-icons-yasnippet (all-the-icons-faicon "bookmark"))
+  (setq company-box-icons-lsp
+ 	    '((1 . (all-the-icons-faicon "text-height")) ;; Text
+		  (2 . ((all-the-icons-faicon "tags") :face font-lock-function-name-face)) ;; Method
+		  (3 . ((all-the-icons-faicon "tag") :face font-lock-function-name-face)) ;; Function
+		  (4 . ((all-the-icons-faicon "tag") :face font-lock-function-name-face)) ;; Constructor
+		  (5 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Field
+		  (6 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Variable
+		  (7 . ((all-the-icons-faicon "cube") :foreground "#7C4DFF")) ;; Class
+		  (8 . ((all-the-icons-faicon "cube") :foreground "#7C4DFF")) ;; Interface
+		  (9 . ((all-the-icons-faicon "cube") :foreground "#7C4DFF")) ;; Module
+		  (10 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Property
+		  (11 . (all-the-icons-material "settings_system_daydream")) ;; Unit
+		  (12 . ((all-the-icons-faicon "cog") :foreground "#FF9800")) ;; Value
+		  (13 . ((all-the-icons-material "storage") :face font-lock-type-face)) ;; Enum
+		  (14 . ((all-the-icons-material "closed_caption") :foreground "#009688")) ;; Keyword
+		  (15 . (all-the-icons-material "closed_caption")) ;; Snippet
+		  (16 . ((all-the-icons-material "color_lens") :face font-lock-doc-face)) ;; Color
+		  (17 . (all-the-icons-faicon "file-text-o")) ;; File
+		  (18 . (all-the-icons-material "refresh")) ;; Reference
+		  (19 . (all-the-icons-faicon "folder-open")) ;; Folder
+		  (20 . ((all-the-icons-material "closed_caption") :foreground "#009688")) ;; EnumMember
+		  (21 . ((all-the-icons-faicon "square") :face font-lock-constant-face)) ;; Constant
+		  (22 . ((all-the-icons-faicon "cube") :face font-lock-type-face)) ;; Struct
+		  (23 . (all-the-icons-faicon "calendar")) ;; Event
+		  (24 . (all-the-icons-faicon "square-o")) ;; Operator
+		  (25 . (all-the-icons-faicon "arrows")))) ;;TypeParameter
 
 ;; Quickrun
 (use-package quickrun
@@ -231,6 +214,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(doom-themes-enable-bold t)
+ '(doom-themes-enable-italic t)
  '(package-selected-packages
    (quote
     (zenburn-theme which-key use-package tern spaceline smartparens quickrun org-bullets org-autolist moody modern-cpp-font-lock minions magit lsp-ui lsp-javascript-typescript langtool js2-mode hide-mode-line helm-rg helm-projectile helm-descbinds helm-ag haskell-mode general flycheck-pos-tip elpy elm-mode eglot doom-themes doom-modeline company-lsp company-box ccls auctex anzu ace-jump-mode))))

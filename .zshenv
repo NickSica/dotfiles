@@ -11,3 +11,5 @@ export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 alias qute="qutebrowser &"
 
 ### TODO if need be: Setup for FPGA aliases
+alias ls='ls --color=auto'
+alias l='ls -Fal'
