@@ -23,11 +23,23 @@
   :config
 ;;  (add-hook 'verilog-mode-hook '(lambda ()
 ;;				  (setq compilation-error-regexp-alist (delete 'gnu compilation-error-regexp-alist))))
-  (setq verilog-indent-level 4
-	verilog-indent-level-behavioral 4
-	verilog-indent-level-declaration 4
-	verilog-indent-level-directive 4
-	verilog-indent-level-module 4))
+  (setq verilog-indent-level             2
+	verilog-indent-level-module      4
+	verilog-indent-level-declaration 2
+	verilog-indent-level-behavioral  2
+	verilog-indent-level-directive   2
+	verilog-case-indent              2
+
+	verilog-auto-newline             nil
+	verilog-auto-indent-on-newline   t
+	verilog-tab-always-indent        t
+	verilog-minimum-comment-distance 10
+	verilog-indent-begin-after-if    t
+	verilog-auto-lineup              nil
+	verilog-align-ifelse             nil
+	verilog-auto-endcomments         t
+	verilog-tab-to-comment           nil
+	verilog-date-scientific-format   t))
 
 ;; LSP shit starts here
 (use-package lsp-mode
