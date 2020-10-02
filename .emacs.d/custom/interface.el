@@ -2,7 +2,8 @@
 (setq inhibit-startup-screen t)
 
 ;; Font Configs
-;;(set-face-attribute 'default nil :font "IosevkaCustom Semibold" :background "#3F3F3F" :foreground "#DCDCCC" :height 120)
+(setq default-frame-alist '(("Cascadia Code 12")))
+(set-face-attribute 'default nil :font "CascadiaCode" :height 120)
 
 ;; UI Configs
 (menu-bar-mode -1)
@@ -54,9 +55,9 @@
   :ensure t
   :defer t)
 
-(use-package treemacs-evil
-  :after treemacs evil
-  :ensure t)
+;;(use-package treemacs-evil
+;;  :after treemacs evil
+;;  :ensure t)
 
 (use-package treemacs-projectile
   :after treemacs projectile
@@ -82,7 +83,7 @@
   (doom-themes-enable-italic t)
   (doom-themes-enable-bold t)
   :config
-  (load-theme 'doom-dracula t)
+  (load-theme 'doom-city-lights t)
   (doom-themes-neotree-config)
   (doom-themes-org-config)
   ;; Modeline

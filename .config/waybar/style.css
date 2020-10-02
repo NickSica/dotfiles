@@ -1,108 +1,71 @@
 * {
-    border: none;
+    border:        none;
     border-radius: 0;
-    font-family: "Roboto Mono for Powerline", "Material Design Icons";
-    font-size: 16px;
-    min-height: 0;
+    font-family:   Sans;
+    font-size:     15px;
+    box-shadow:    none;
+    text-shadow:   none;
+    transition-duration: 0s;
 }
 
-window#waybar {
-    background-color: rgba(11, 11, 11, 0.8);
-    color: #ffffff;
-    transition-property: background-color;
-    transition-duration: .5s;
+window {
+    color:      rgba(217, 216, 216, 1);
+    background: rgba(35, 31, 32, 0.00);
 }
 
-window#waybar.hidden {
-    opacity: 0.2;
-}
-
-#window {
-  padding: 0 15px;
-}
-
-/*
-window#waybar.empty {
-    background-color: transparent;
-}
 window#waybar.solo {
-    background-color: #FFFFFF;
+    color:      rgba(217, 216, 216, 1);
+    background: rgba(35, 31, 32, 0.85);
 }
-*/
 
-/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+#workspaces {
+    margin: 0 5px;
+}
+
 #workspaces button {
-    padding: 0 5px;
-    background-color: transparent;
-    border-bottom: 2px solid rgba(100, 114, 125, 0.5);
-    color: #999999;
+    padding:    0 5px;
+    color:      rgba(217, 216, 216, 0.4);
+}
+
+#workspaces button.visible {
+    color:      rgba(217, 216, 216, 1);
 }
 
 #workspaces button.focused {
-  color: #ffffff;
-    background-color: #333333;
-    border-bottom: 2px solid #00ff96;
+    border-top: 3px solid rgba(217, 216, 216, 1);
+    border-bottom: 3px solid rgba(217, 216, 216, 0);
 }
 
 #workspaces button.urgent {
-    background-color: #eb4d4b;
+    color:      rgba(238, 46, 36, 1);
 }
 
-#clock,
-#custom-vpn,
-#battery,
-#cpu,
-#memory,
-#backlight,
-#network,
-#pulseaudio,
-#tray,
-#mode,
-#idle_inhibitor {
-    padding: 0 5px;
-    margin: 0 4px;
-    background-color: transparent;
-    border-bottom: 2px solid #00ff96;
-    color: #ffffff;
+#mode, #battery, #cpu, #memory, #network, #pulseaudio, #idle_inhibitor, #backlight, #custom-storage, #custom-spotify, #custom-weather, #custom-mail {
+    margin:     0px 6px 0px 10px;
+    min-width:  25px;
 }
 
-#mode {
-  background-color: #00ff96;
-  color: #000000;
+#clock {
+    margin:     0px 16px 0px 10px;
+    min-width:  140px;
 }
 
-#pulseaudio,
-#clock,
-#tray,
-#cpu {
-  border-bottom: transparent;
+#battery.warning {
+   color:       rgba(255, 210, 4, 1);
 }
 
-#battery {
-  border-bottom: 2px solid #bff874;
+#battery.critical {
+    color:      rgba(238, 46, 36, 1);
 }
 
 #battery.charging {
-  border-bottom: 2px solid #00ff96;
+    color:      rgba(217, 216, 216, 1);
 }
 
-#custom-vpn.down,
-#battery.critical:not(.charging) {
-  border-bottom: 2px solid #dd2241;
+#custom-storage.warning {
+    color:      rgba(255, 210, 4, 1);
 }
 
-label:focus {
-    background-color: #000000;
-}
-
-#network.disconnected {
-  border-bottom: 2px solid #dd2241;
-}
-
-#pulseaudio.bluetooth {
-  border-bottom: 2px solid #1a8cff;
-}
-
-#pulseaudio.muted {
-  border-bottom: 2px solid #fff569;
+#custom-storage.critical {
+    color:      rgba(238, 46, 36, 1);
 }

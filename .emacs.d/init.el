@@ -109,21 +109,21 @@
 
 ;; Company mode
 (use-package company
-	     :ensure t
-	     :init
-	     (setq company-minimum-prefix-length 2)
-	     ;; (setq company-auto-complete nil)
-	     (setq company-idle-delay .1)
-	     (setq company-require-match 'never)
-		 (setq company-tooltip-align-annotations 't)
-		 (setq company-show-numbers t)
-	     (setq company-frontends
-		   '(company-pseudo-tooltip-unless-just-one-frontend
-		     company-preview-frontend
-		     company-echo-metadata-frontend))
-      	     (setq tab-always-indent 'complete)
-	     (defvar completion-at-point-functions-saved nil)
-	     :config
+  :ensure t
+  :init
+  (setq company-minimum-prefix-length 2)
+;;  (setq company-auto-complete nil)
+  (setq company-idle-delay .1)
+  (setq company-require-match 'never)
+  (setq company-tooltip-align-annotations 't)
+  (setq company-show-numbers t)
+  (setq company-frontends
+    '(company-pseudo-tooltip-unless-just-one-frontend
+      company-preview-frontend
+      company-echo-metadata-frontend))
+  (setq tab-always-indent 'complete)
+  (defvar completion-at-point-functions-saved nil)
+  :config
 	     (global-company-mode t)
 	     (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
 	     (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
@@ -141,6 +141,7 @@
 
 (use-package company-box
   :ensure t
+  :requires frame-local
   :hook
   (company-mode . company-box-mode))
   :init
@@ -217,8 +218,7 @@
  '(doom-themes-enable-bold t)
  '(doom-themes-enable-italic t)
  '(package-selected-packages
-   (quote
-    (zenburn-theme which-key use-package tern spaceline smartparens quickrun org-bullets org-autolist moody modern-cpp-font-lock minions magit lsp-ui lsp-javascript-typescript langtool js2-mode hide-mode-line helm-rg helm-projectile helm-descbinds helm-ag haskell-mode general flycheck-pos-tip elpy elm-mode eglot doom-themes doom-modeline company-lsp company-box ccls auctex anzu ace-jump-mode))))
+   '(ligature zenburn-theme which-key use-package tern spaceline smartparens quickrun org-bullets org-autolist moody modern-cpp-font-lock minions magit lsp-ui lsp-javascript-typescript langtool js2-mode hide-mode-line helm-rg helm-projectile helm-descbinds helm-ag haskell-mode general flycheck-pos-tip elpy elm-mode eglot doom-themes doom-modeline company-lsp company-box ccls auctex anzu ace-jump-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

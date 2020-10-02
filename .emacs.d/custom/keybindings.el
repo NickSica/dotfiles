@@ -1,21 +1,21 @@
 ;; Evil Mode
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-search-module 'evil-search)
-  (setq evil-ex-complete-emacs-commands nil)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (setq evil-shift-round nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-disable-insert-state-bindings t)
-  :config
-  (evil-mode)
-  (defvar my-leader-map (make-sparse-keymap)
-    "Keymap for \"leader key\" shortcuts.")
-  (define-key evil-normal-state-map "," 'evil-repeat-find-char-reverse)
-  (define-key evil-normal-state-map (kbd "SPC") my-leader-map)
-  (define-key my-leader-map "w" 'evil-window-vsplit))
+;;(use-package evil
+;;  :ensure t
+;;  :init
+;;  (setq evil-search-module 'evil-search)
+;;  (setq evil-ex-complete-emacs-commands nil)
+;;  (setq evil-vsplit-window-right t)
+;;  (setq evil-split-window-below t)
+;;  (setq evil-shift-round nil)
+;;  (setq evil-want-C-u-scroll t)
+;;  (setq evil-disable-insert-state-bindings t)
+;;  :config
+;;  (evil-mode)
+;;  (defvar my-leader-map (make-sparse-keymap)
+;;    "Keymap for \"leader key\" shortcuts.")
+;; (define-key evil-normal-state-map "," 'evil-repeat-find-char-reverse)
+;;  (define-key evil-normal-state-map (kbd "SPC") my-leader-map)
+;;  (define-key my-leader-map "w" 'evil-window-vsplit))
 
 ;; Paragraph Movement
 (global-set-key (kbd "s-j") 'forward-paragraph)
