@@ -21,11 +21,13 @@ $
 
 # Command Line History (newest to oldest):
 :wq
-|2,0,1601419323,,"wq"
+|2,0,1602559569,,"wq"
+:q
+|2,0,1602552326,,"q"
+:w
+|2,0,1602545162,,"w"
 :Wq
 |2,0,1601413030,,"Wq"
-:q
-|2,0,1601396066,,"q"
 :s/.\/test_outputs\//
 |2,0,1601395971,,"s/.\\/test_outputs\\//"
 :s/.\/test_outputs\/
@@ -38,8 +40,6 @@ $
 |2,0,1601395831,,"s/.\\/test_outputs\\///g"
 :w!
 |2,0,1601395810,,"w!"
-:w
-|2,0,1601337642,,"w"
 :"wq
 |2,0,1601312726,,"\"wq"
 :Q
@@ -78,290 +78,268 @@ $
 		@echo "Ex 9"
 		./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > hw2_ex9.pbm
 |3,0,0,1,2,0,1601396568,"	@echo \"Ex 9\"","	./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > hw2_ex9.pbm"
-"1	LINE	0
-	(set-frame-font "Cascadia Code 120" nil t)
-|3,0,1,1,1,0,1601413155,"(set-frame-font \"Cascadia Code 120\" nil t)"
+""1	LINE	0
+	
+|3,1,1,1,1,0,1602545161,""
 "2	LINE	0
-		./$(name) -s 0.8 -m 85 -n 25 -r 10 > hw1.pbm
-|3,0,2,1,1,0,1601396651,"	./$(name) -s 0.8 -m 85 -n 25 -r 10 > hw1.pbm"
+	
+|3,0,2,1,1,0,1602545160,""
 "3	LINE	0
-		./$(name) -f hw1.ps -s 0.5 > scale.pbm
-|3,0,3,1,1,0,1601396650,"	./$(name) -f hw1.ps -s 0.5 > scale.pbm"
+	
+|3,0,3,1,1,0,1601920219,""
 "4	LINE	0
-		./$(name) -f hw1.ps -r -30 > nrotate.pbm
-|3,0,4,1,1,0,1601396649,"	./$(name) -f hw1.ps -r -30 > nrotate.pbm"
+	    #+END_SRC emacs-lisp
+|3,0,4,1,1,0,1601920219,"    #+END_SRC emacs-lisp"
 "5	LINE	0
-		./$(name) -f hw1.ps -m 100 -n 100 > translate.pbm
-|3,0,5,1,1,0,1601396648,"	./$(name) -f hw1.ps -m 100 -n 100 > translate.pbm"
+	    )
+|3,0,5,1,1,0,1601920218,"    )"
 "6	LINE	0
-		./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 >
-|3,0,6,1,1,0,1601396647,"	./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 >"
+	    ;; If there is more than one, they won't work right.
+|3,0,6,1,1,0,1601920218,"    ;; If there is more than one, they won't work right."
 "7	LINE	0
-		./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > 
-|3,0,7,1,1,0,1601396646,"	./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > "
+	    ;; Your init file should contain only one such instance.
+|3,0,7,1,1,0,1601920218,"    ;; Your init file should contain only one such instance."
 "8	LINE	0
-		./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > 
-|3,0,8,1,1,0,1601396645,"	./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > "
+	    ;; If you edit it by hand, you could mess it up, so be careful.
+|3,0,8,1,1,0,1601920217,"    ;; If you edit it by hand, you could mess it up, so be careful."
 "9	LINE	0
-		./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > 
-		@echo "Ex 9"
-|3,0,9,1,2,0,1601396642,"	./$(name) -f hw1.ps -a 25 -b 50 -c 399 -d 399 -r 30 -m 100 -n 100 -s 0.5 > ","	@echo \"Ex 9\""
-""-	CHAR	0
+	    ;; custom-set-faces was added by Custom.
+|3,0,9,1,1,0,1601920217,"    ;; custom-set-faces was added by Custom."
+"-	CHAR	0
 	;
-|3,1,36,0,1,0,1601413155,";"
+|3,0,36,0,1,0,1601413155,";"
 
 # File marks:
-'0  1  0  ~/.config/nvim/init.vim
-|4,48,1,0,1601419323,"~/.config/nvim/init.vim"
-'1  5  47  ~/.emacs.d/custom/interface.el
-|4,49,5,47,1601413164,"~/.emacs.d/custom/interface.el"
-'2  6  0  ~/.emacs.d/custom/interface.el
-|4,50,6,0,1601413033,"~/.emacs.d/custom/interface.el"
-'3  5  32  ~/.emacs.d/custom/interface.el
-|4,51,5,32,1601412986,"~/.emacs.d/custom/interface.el"
-'4  5  32  ~/.emacs.d/custom/interface.el
-|4,52,5,32,1601412986,"~/.emacs.d/custom/interface.el"
-'5  5  32  ~/.emacs.d/custom/interface.el
-|4,53,5,32,1601412986,"~/.emacs.d/custom/interface.el"
-'6  5  32  ~/.emacs.d/custom/interface.el
-|4,54,5,32,1601412986,"~/.emacs.d/custom/interface.el"
-'7  19  21  ~/CS430/assn_2/Makefile
-|4,55,19,21,1601397327,"~/CS430/assn_2/Makefile"
-'8  32  1  ~/CS430/assn_2/Makefile
-|4,56,32,1,1601396066,"~/CS430/assn_2/Makefile"
-'9  26  1  ~/CS430/assn_2/Makefile
-|4,57,26,1,1601396066,"~/CS430/assn_2/Makefile"
+'0  25  26  ~/CS430/assn_2/Makefile
+|4,48,25,26,1602559569,"~/CS430/assn_2/Makefile"
+'1  589  0  ~/CS430/assn_2/hw2_ex2.pbm
+|4,49,589,0,1602552326,"~/CS430/assn_2/hw2_ex2.pbm"
+'2  26  1  ~/CS430/assn_2/Makefile
+|4,50,26,1,1602545170,"~/CS430/assn_2/Makefile"
+'3  26  1  ~/CS430/assn_2/Makefile
+|4,51,26,1,1602545170,"~/CS430/assn_2/Makefile"
+'4  28  0  ~/CS430/assn_2/Makefile
+|4,52,28,0,1602545163,"~/CS430/assn_2/Makefile"
+'5  28  0  ~/CS430/assn_2/Makefile
+|4,53,28,0,1602545163,"~/CS430/assn_2/Makefile"
+'6  28  0  ~/CS430/assn_2/Makefile
+|4,54,28,0,1602545163,"~/CS430/assn_2/Makefile"
+'7  28  0  ~/CS430/assn_2/Makefile
+|4,55,28,0,1602545163,"~/CS430/assn_2/Makefile"
+'8  7  12  ~/CS430/assn_2/Makefile
+|4,56,7,12,1602533544,"~/CS430/assn_2/Makefile"
+'9  7  12  ~/CS430/assn_2/Makefile
+|4,57,7,12,1602533544,"~/CS430/assn_2/Makefile"
 
 # Jumplist (newest first):
--'  1  0  ~/.config/nvim/init.vim
-|4,39,1,0,1601419323,"~/.config/nvim/init.vim"
--'  5  47  ~/.emacs.d/custom/interface.el
-|4,39,5,47,1601413164,"~/.emacs.d/custom/interface.el"
--'  5  47  ~/.emacs.d/custom/interface.el
-|4,39,5,47,1601413164,"~/.emacs.d/custom/interface.el"
--'  6  0  ~/.emacs.d/custom/interface.el
-|4,39,6,0,1601413033,"~/.emacs.d/custom/interface.el"
--'  6  0  ~/.emacs.d/custom/interface.el
-|4,39,6,0,1601413033,"~/.emacs.d/custom/interface.el"
--'  5  32  ~/.emacs.d/custom/interface.el
-|4,39,5,32,1601413025,"~/.emacs.d/custom/interface.el"
--'  5  32  ~/.emacs.d/custom/interface.el
-|4,39,5,32,1601413025,"~/.emacs.d/custom/interface.el"
--'  5  32  ~/.emacs.d/custom/interface.el
-|4,39,5,32,1601412986,"~/.emacs.d/custom/interface.el"
--'  5  32  ~/.emacs.d/custom/interface.el
-|4,39,5,32,1601412986,"~/.emacs.d/custom/interface.el"
--'  58  0  ~/.emacs.d/custom/interface.el
-|4,39,58,0,1601412975,"~/.emacs.d/custom/interface.el"
--'  59  0  ~/.emacs.d/custom/interface.el
-|4,39,59,0,1601412975,"~/.emacs.d/custom/interface.el"
--'  59  0  ~/.emacs.d/custom/interface.el
-|4,39,59,0,1601412975,"~/.emacs.d/custom/interface.el"
--'  58  0  ~/.emacs.d/custom/interface.el
-|4,39,58,0,1601412975,"~/.emacs.d/custom/interface.el"
--'  59  0  ~/.emacs.d/custom/interface.el
-|4,39,59,0,1601412975,"~/.emacs.d/custom/interface.el"
--'  59  0  ~/.emacs.d/custom/interface.el
-|4,39,59,0,1601412975,"~/.emacs.d/custom/interface.el"
+-'  25  26  ~/CS430/assn_2/Makefile
+|4,39,25,26,1602559569,"~/CS430/assn_2/Makefile"
+-'  26  1  ~/CS430/assn_2/Makefile
+|4,39,26,1,1602559564,"~/CS430/assn_2/Makefile"
+-'  589  0  ~/CS430/assn_2/hw2_ex2.pbm
+|4,39,589,0,1602552326,"~/CS430/assn_2/hw2_ex2.pbm"
+-'  589  0  ~/CS430/assn_2/hw2_ex2.pbm
+|4,39,589,0,1602552326,"~/CS430/assn_2/hw2_ex2.pbm"
+-'  1  0  ~/CS430/assn_2/hw2_ex2.pbm
+|4,39,1,0,1602552289,"~/CS430/assn_2/hw2_ex2.pbm"
+-'  1  0  ~/CS430/assn_2/hw2_ex2.pbm
+|4,39,1,0,1602552289,"~/CS430/assn_2/hw2_ex2.pbm"
+-'  26  1  ~/CS430/assn_2/Makefile
+|4,39,26,1,1602545170,"~/CS430/assn_2/Makefile"
+-'  26  1  ~/CS430/assn_2/Makefile
+|4,39,26,1,1602545170,"~/CS430/assn_2/Makefile"
+-'  28  0  ~/CS430/assn_2/Makefile
+|4,39,28,0,1602545166,"~/CS430/assn_2/Makefile"
+-'  28  0  ~/CS430/assn_2/Makefile
+|4,39,28,0,1602545166,"~/CS430/assn_2/Makefile"
+-'  28  0  ~/CS430/assn_2/Makefile
+|4,39,28,0,1602545166,"~/CS430/assn_2/Makefile"
+-'  28  0  ~/CS430/assn_2/Makefile
+|4,39,28,0,1602545163,"~/CS430/assn_2/Makefile"
+-'  28  0  ~/CS430/assn_2/Makefile
+|4,39,28,0,1602545163,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602544959,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602544959,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602544959,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602544959,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602544959,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602533544,"~/CS430/assn_2/Makefile"
+-'  7  12  ~/CS430/assn_2/Makefile
+|4,39,7,12,1602533544,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
 -'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  19  21  ~/CS430/assn_2/Makefile
-|4,39,19,21,1601397327,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  11  41  ~/CS430/assn_2/Makefile
-|4,39,11,41,1601396655,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  27  1  ~/CS430/assn_2/Makefile
-|4,39,27,1,1601396644,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  12  12  ~/CS430/assn_2/Makefile
-|4,39,12,12,1601396629,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  24  1  ~/CS430/assn_2/Makefile
-|4,39,24,1,1601396581,"~/CS430/assn_2/Makefile"
--'  16  1  ~/CS430/assn_2/Makefile
-|4,39,16,1,1601396485,"~/CS430/assn_2/Makefile"
--'  16  1  ~/CS430/assn_2/Makefile
-|4,39,16,1,1601396485,"~/CS430/assn_2/Makefile"
--'  16  1  ~/CS430/assn_2/Makefile
-|4,39,16,1,1601396485,"~/CS430/assn_2/Makefile"
--'  16  1  ~/CS430/assn_2/Makefile
-|4,39,16,1,1601396485,"~/CS430/assn_2/Makefile"
--'  16  1  ~/CS430/assn_2/Makefile
-|4,39,16,1,1601396485,"~/CS430/assn_2/Makefile"
+|4,39,19,21,1602533534,"~/CS430/assn_2/Makefile"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  3  25  ~/.emacs.d/init.el
+|4,39,3,25,1601921750,"~/.emacs.d/init.el"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
+-'  13  10  ~/.emacs.d/test.org
+|4,39,13,10,1601921667,"~/.emacs.d/test.org"
 
 # History of marks within files (newest to oldest):
 
-> ~/.config/nvim/init.vim
-	*	1601419322	0
-	"	1	0
-	^	1	1
-	.	1	0
-	+	1	0
-
-> ~/.emacs.d/custom/interface.el
-	*	1601413163	0
-	"	5	47
-	^	5	48
-	.	5	48
-	+	56	1
-	+	57	1
-	+	58	1
-	+	5	48
-
 > ~/CS430/assn_2/Makefile
-	*	1601397326	0
-	"	19	21
-	^	19	22
-	.	23	23
-	+	2	12
-	+	10	9
-	+	14	11
-	+	10	11
+	*	1602559568	0
+	"	25	26
+	^	25	27
+	.	25	26
 	+	12	13
 	+	14	38
 	+	16	30
@@ -372,7 +350,7 @@ $
 	+	14	10
 	+	10	10
 	+	14	10
-	+	32	12
+	+	30	12
 	+	10	0
 	+	14	0
 	+	16	0
@@ -455,12 +433,67 @@ $
 	+	19	23
 	+	21	23
 	+	23	23
+	+	7	12
+	+	19	49
+	+	21	49
+	+	23	55
+	+	25	49
+	+	28	0
+	+	25	26
+
+> ~/CS430/assn_2/hw2_ex2.pbm
+	*	1602552324	0
+	"	589	0
+
+> ~/.emacs.d/init.el
+	*	1601921749	0
+	"	3	25
+	^	3	26
+	.	3	25
+	+	112	1
+	+	113	1
+	+	114	0
+	+	115	0
+	+	116	0
+	+	115	1
+	+	117	0
+	+	118	1
+	+	119	1
+	+	120	0
+	+	121	1
+	+	122	1
+	+	123	1
+	+	124	2
+	+	125	0
+	+	126	0
+	+	144	22
+	+	3	25
+
+> ~/.emacs.d/test.org
+	*	1601921666	0
+	"	13	10
+	^	13	11
+	.	13	11
+	+	14	0
+	+	13	11
+
+> ~/.emacs.d/config.org
+	*	1601920126	0
+	"	10	2
+	.	4	0
+	+	4	0
+	+	3	34
+	+	4	0
+
+> ~/.emacs.d/init.
+	*	1601917904	0
+	"	1	0
 
 > ~/CS430/assn_1/Makefile
-	*	1601395982	0
-	"	26	12
-	^	26	13
-	.	26	12
+	*	1601836337	0
+	"	7	8
+	^	7	9
+	.	7	9
 	+	25	0
 	+	11	25
 	+	27	10
@@ -542,6 +575,24 @@ $
 	+	23	0
 	+	10	0
 	+	26	12
+	+	7	9
+
+> ~/.config/nvim/init.vim
+	*	1601419322	0
+	"	1	0
+	^	1	1
+	.	1	0
+	+	1	0
+
+> ~/.emacs.d/custom/interface.el
+	*	1601413163	0
+	"	5	47
+	^	5	48
+	.	5	48
+	+	56	1
+	+	57	1
+	+	58	1
+	+	5	48
 
 > ~/CS430/assn_1/output
 	*	1601384711	0
@@ -579,30 +630,6 @@ $
 > ~/.config/systemd/user/emacs.service.d/.#override.confe9d75b7a2c801d7e
 	*	1600460062	0
 	"	1	0
-
-> ~/.emacs.d/init.el
-	*	1600459505	0
-	"	3	48
-	^	3	49
-	.	3	48
-	+	112	1
-	+	113	1
-	+	114	0
-	+	115	0
-	+	116	0
-	+	115	1
-	+	117	0
-	+	118	1
-	+	119	1
-	+	120	0
-	+	121	1
-	+	122	1
-	+	123	1
-	+	124	2
-	+	125	0
-	+	126	0
-	+	144	22
-	+	3	48
 
 > ~/.emacs.d/custom/lang_config.el
 	*	1600458983	0
