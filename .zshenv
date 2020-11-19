@@ -12,6 +12,8 @@ alias qute="qutebrowser &"
 alias ls='ls --color=auto'
 alias l='ls -Fal'
 alias e='emacsclient'
+alias vim='nvim'
+alias v='nvim'
 
 ### TODO if need be: Setup for FPGA aliases
 
