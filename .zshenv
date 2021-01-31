@@ -1,5 +1,6 @@
 export LFS=/mnt/lfs
-export PATH=$PATH:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:~/intelFPGA_pro/19.3/modelsim_ase/bin:/opt/symbiotic_20200206A/bin
+export PATH=$PATH:~/inferno-os/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:~/intelFPGA_pro/19.3/modelsim_ase/bin
+#/opt/symbiotic_20200206A/bin
 export TERM=termite
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
 
@@ -15,8 +16,10 @@ alias e='emacsclient'
 alias vim='nvim'
 alias v='nvim'
 
-### TODO if need be: Setup for FPGA aliases
+### Stop vivado throwing logs everywhere
+alias vivado="vivado -nolog -nojournal"
 
+### TODO if need be: Setup for FPGA aliases
 
 ### Symbiotic EDA
 export SYMBIOTIC_LICENSE="$HOME/symbiotic_academic_license.lic"

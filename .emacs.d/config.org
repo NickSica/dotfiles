@@ -1,0 +1,714 @@
+#+TITLE: My Emacs Configuration
+#+AUTHOR: Nicholas Sica
+#+PROPERTY: header-args :tangle yes
+* Initial Configuration
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/") t)
+(package-initialize)
+(package-refresh-contents)
+#+END_SRC
+** Bootstrap 'use-package'
+#+BEGIN_SRC emacs-lisp
+(unless(package-installed-p 'use-package)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+#+END_SRC
+
+** Make sure packages are always updated
+   #+BEGIN_SRC emacs-lisp
+	 (use-package auto-package-update
+	   :config
+	   (setq auto-package-update-delete-old-versions t)
+	   (setq auto-package-update-hide-results t)
+	   (auto-package-update-maybe))
+
+	 ;; Run update weekly on Monday at 3AM
+	 ;; TODO: Figure out how to use better format to specify week
+	 ;;(run-at-time "03:00" 604800 #'auto-package-update-now)
+   #+END_SRC
+
+** Stop emacs from cluttering my drive
+   #+BEGIN_SRC emacs-lisp
+   (setq make-backup-files nil)
+   (setq auto-save-default nil)
+   #+END_SRC
+
+* General UI Tweaks
+** Splash Screen and Font
+#+begin_src emacs-lisp
+  (setq inhibit-startup-screen t)
+  (set-face-attribute 'default nil :font "Cascadia Code PL" :height 120)
+#+end_src
+** UI Configuration
+**** Get rid of bars and add line numbers
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tooltip-mode -1)
+  (global-linum-mode 1)
+  (set-fringe-mode 10)
+#+end_src
+**** Smooth Scrolling and Bar Cursor
+#+begin_src emacs-lisp
+  (pixel-scroll-mode 1)
+  (setq scroll-step 1)
+  (setq-default cursor-type 'bar)
+#+end_src
+**** Always use tabs for indentation
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode t)
+  (setq-default backward-delete-char-untabify-method 'hungry)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  ;;(global-whitespace-mode 1)
+#+end_src
+
+* Advanced UI Config
+** Dashboard
+   #+begin_src emacs-lisp
+   (use-package dashboard
+     :config
+     ;; for daemon
+     (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+     (dashboard-setup-startup-hook))
+   #+end_src
+** Centaur Tabs
+   #+begin_src emacs-lisp
+   (use-package centaur-tabs
+     :demand
+     :config
+     (centaur-tabs-mode t)
+     (centaur-tabs-headline-match)
+     (setq centaur-tabs-style "bar")
+     (setq centaur-tabs-set-bar 'under)
+     ;; To get underline to display correctly on non-spacemacs
+     (setq x-underline-at-descent-line t)
+     (setq centaur-tabs-set-icons t)
+     (setq centaur-tabs-gray-out-icons t)
+     :bind
+     ("C-<prior>" . centaur-tabs-backward)
+     ("C-<next>"  . centaur-tabs-forward))
+   #+end_src
+** Parentheses
+*** Show Matching
+    #+begin_src emacs-lisp
+    (setq show-paren-delay 0)
+    (show-paren-mode 1)
+    #+end_src
+*** Smartparens
+    #+begin_src emacs-lisp
+    (use-package smartparens
+      :config
+      (require 'smartparens-config)
+      (smartparens-strict-mode t)
+      (smartparens-global-mode t)
+      (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+      (sp-local-pair 'org-mode "[" nil :actions nil)
+      (sp-local-pair 'verilog-mode "'" nil :actions nil))
+    #+end_src
+*** Rainbow Delimiters
+    #+begin_src emacs-lisp
+    (use-package rainbow-delimiters
+      :hook (prog-mode . rainbow-delimiters-mode))
+    #+end_src
+** Treemacs
+   #+begin_src emacs-lisp
+   (use-package treemacs
+     :defer t)
+
+   (use-package treemacs-evil
+     :after treemacs evil)
+
+   (use-package treemacs-projectile
+     :after treemacs projectile)
+
+   (use-package treemacs-icons-dired
+     :after treemacs dired
+     :config (treemacs-icons-dired-mode))
+
+   (use-package treemacs-magit
+     :after treemacs magit)
+   #+end_src
+** Theme
+   #+begin_src emacs-lisp
+   ;; All The Icons
+   (use-package all-the-icons)
+
+   (use-package doom-themes
+     :custom
+     (doom-themes-enable-italic t)
+     (doom-themes-enable-bold t)
+     :config
+     (load-theme 'doom-city-lights t)
+     (doom-themes-neotree-config)
+     (doom-themes-org-config))
+   #+end_src
+** Modeline
+   #+begin_src emacs-lisp
+   (use-package minions
+     :hook (doom-modeline-mode . minions-mode))
+
+   (use-package doom-modeline
+     :hook (after-init . doom-modeline-mode)
+     :custom
+     (doom-modeline-lsp t)
+     (doom-modeline-github t)
+     (doom-modeline-minor-modes t)
+     (doom-modeline-persp-name nil)
+     (doom-modeline-buffer-file-name-style 'truncate-except-project)
+     (doom-modeline-icon t)
+     (doom-modeline-major-mode-icon t)
+     :config
+     (set-cursor-color "cyan")
+     (line-number-mode t)
+     (column-number-mode t))
+   #+end_src
+
+*** Clean Modeline with Diminish
+     #+begin_src emacs-lisp
+     (use-package diminish)
+     #+end_src
+* Undo Tree
+  #+begin_src emacs-lisp
+  (use-package undo-tree
+    :config
+    (global-undo-tree-mode))
+  #+end_src
+
+* Evil
+  #+begin_src emacs-lisp
+  ;; Start in normal mode
+  ;;(defun sica/evil-hook ()
+  ;;  (dolist (mode '(mode-to-start-in-normal-mode)))
+  ;;  (add-to-list 'evil-emacs-state-modes mode))
+
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    (setq evil-want-fine-undo t)
+    (setq evil-undo-system 'undo-tree)
+    (setq evil-search-module 'evil-search)
+    ;;:hook (evil-mode . sica/evil-hook)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+    (define-key evil-motion-state-map (kbd "SPC") nil)
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+    ;;(evil-set-initial-state 'messages-buffer-mode 'normal)
+    ;;(evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :custom
+    (evil-collection-bind-tab-p nil)
+    :config
+    (evil-collection-init))
+  #+end_src
+
+* General(the keybinding package)
+  #+begin_src emacs-lisp
+    (use-package general
+       :config
+       (general-evil-setup t)
+
+       (general-create-definer sica/leader-key-def
+         :keymaps '(normal insert visual emacs)
+         :prefix "SPC"
+         :global-prefix "C-SPC"))
+
+    (sica/leader-key-def
+      "t"   '(:ignore t :which-key "toggles")
+      "b"   '(:ignore t :which-key "buffers")
+      "bd"  'kill-this-buffer
+      "bk"  'kill-buffer
+      "bn"  'evil-next-buffer
+      "bp"  'evil-prev-buffer)
+  #+end_src
+
+* Other Stuffs
+   #+begin_src emacs-lisp
+;; Paragraph Movement
+(global-set-key (kbd "s-j") 'forward-paragraph)
+(global-set-key (kbd "s-k") 'backward-paragraph)
+
+;; Functions
+(global-set-key (kbd "C-.") 'repeat)
+(global-set-key (kbd "C-c f e d") (lambda ()
+                                    "open emacs config"
+                                    (interactive)
+                                    (find-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-c f e R") (lambda ()
+                                    "reload emacs config"
+                                    (interactive)
+                                    (load-file "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-c a t") 'ansi-term)
+(global-set-key (kbd "C-c C-c") 'lazy-highlight-cleanup)
+(global-set-key (kbd "C-c TAB") 'previous-buffer)
+(global-set-key (kbd "C-z") 'undo)
+
+;; Window management
+(global-set-key (kbd "C-c /") 'split-window-right)
+(global-set-key (kbd "C-c \\") 'split-window-below)
+(global-set-key (kbd "C-c l") 'windmove-right)
+(global-set-key (kbd "C-c h") 'windmove-left)
+(global-set-key (kbd "C-c k") 'windmove-up)
+(global-set-key (kbd "C-c j") 'windmove-down)
+(global-set-key (kbd "C-c =") 'balance-windows)
+
+;; Org Journal
+(global-set-key (kbd "C-c t n") 'org-journal-list--start)
+(global-set-key (kbd "C-c t d") (lambda ()
+                                  "open agenda"
+                                  (interactive)
+                                  (org-agenda nil "c")))
+  #+end_src
+
+* Ivy/Counsel
+  #+begin_src emacs-lisp
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :init
+    (ivy-mode 1)
+    :config
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-wrap t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq enable-recursive-minibuffers t)
+
+    ;; Different regex strategies
+    (push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist) ;; Doesn't seem to work?
+    (push '(swiper . ivy--ignore-order) ivy-re-builders-alist)
+    (push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist))
+
+  (use-package counsel
+    :bind (("M-x" . counsel-M-x))
+    :config
+    (setq ivy-initial-inputs-alist nil))
+
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+  ;;(general-define-key
+  ;;  :keymaps 'minibuffer-local-map
+  ;;  ("C-r" . 'counsel-minibuffer-history))
+
+  (sica/leader-key-def
+    ","   'counsel-ibuffer)
+  #+end_src
+
+* Which-Key Configuration
+  #+begin_src emacs-lisp
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 1))
+  #+end_src
+
+* Helpful Configuration
+  #+begin_src emacs-lisp
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+  #+end_src
+* Org Mode Configuration
+  #+begin_src emacs-lisp
+  (defun enhance-ui-for-orgmode()
+    "Enhance UI for orgmode."
+    (org-bullets-mode 1)
+    (org-autolist-mode 1)
+    (linum-mode nil)
+    (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
+            set-face-attribute face nil
+            :height 1.0
+            :background nil))
+  #+end_src
+
+** Additional Packages
+   #+begin_src emacs-lisp
+   (use-package org-autolist
+     :ensure t)
+   (use-package org-bullets
+     :ensure t)
+  #+end_src
+
+** OrgMode Configs
+   #+begin_src emacs-lisp
+   (add-to-list 'org-structure-template-alist
+                '("o" "#+TITLE: ?\n#+DATE: "))
+
+   (dolist (hook '(text-mode-hook))
+           (add-hook hook (lambda () (flyspell-mode 1))))
+
+   (add-hook 'org-mode-hook 'enhance-ui-for-orgmode)
+
+   (defun filter-org-skip-subtree-if-priority (priority)
+     "Skip an agenda subtree if it has a priority of PRIORITY.
+      PRIORITY may be one of the characters ?A, ?B, or ?C."
+     (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+           (pri-value (* 1000 (- org-lowest-priority priority)))
+           (pri-current (org-get-priority (thing-at-point 'line t))))
+          (if (= pri-value pri-current)
+              subtree-end
+              nil)))
+
+   (setq org-agenda-window-setup 'only-window)
+   (setq org-agenda-custom-commands
+         '(("c" "Custom agenda view"
+           ((tags "PRIORITY=\"A\""
+             ((org-agenda-overriding-header "High-priority unfinished tasks:")
+              (org-agenda-skip-function '(org-agenda-skip-if nil '(todo done)))))
+            (agenda "")
+            (alltodo ""
+              ((org-agenda-skip-function '(or (filter-org-skip-subtree-if-priority ?A)
+                                              (org-agenda-skip-if nil '(scheduled deadline))))))))))
+   (setq org-return-follows-link t)
+   (setq org-hide-emphasis-markers t)
+   (setq org-html-validation-link nil)
+   (setq org-todo-keywords
+         '((sequence "TODO" "WORKING" "HOLD" "|" "DONE")))
+   (setq org-todo-keyword-faces
+         '(("TODO"    . "#eb4d4b")
+           ("WORKING" . "#f0932b")
+           ("HOLD"    . "#eb4d4b")
+           ("DONE"    . "#6ab04c")))
+  #+end_src
+* Projectile Configuration
+  #+begin_src emacs-lisp
+  (use-package projectile
+    :diminish projectile-mode
+    :config (projectile-mode)
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
+
+  ;; Find a project via projectile
+  (defun nick/projectile-proj-find-function(dir)
+    (let((root (projectile-project-root dir)))
+      (and root (cons 'transient root))))
+  (with-eval-after-load 'project
+    (add-to-list 'project-find-functions
+                 'nick/projectile-proj-find-function))
+  #+end_src
+
+* Magit Configuration
+#+begin_src emacs-lisp
+  (use-package magit
+	:custom
+	(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+  ;; NOTE: Make sure to configure a GitHub token before using this package!
+  ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
+  ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
+  (use-package forge)
+#+end_src
+* Unsorted Shit
+#+begin_src emacs-lisp
+;; PATH
+(let((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+  (setenv "PATH" path)
+  (setq exec-path
+        (append
+         (split-string-and-unquote path ":")
+         exec-path)))
+
+;; Some term enhancement
+(defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
+  (if(memq (process-status proc) '(signal exit))
+      (let((buffer (process-buffer proc)))
+        ad-do-it
+        (kill-buffer buffer))
+    ad-do-it))
+(ad-activate 'term-sentinel)
+
+(defadvice ansi-term (before force-bash)
+  (interactive (list "/bin/zsh")))
+(ad-activate 'ansi-term)
+
+;; Anzu for search matching
+(use-package anzu
+             :ensure t
+             :config
+             (global-anzu-mode 1)
+             (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+             (global-set-key [remap query-replace] 'anzu-query-replace))
+
+;;; Auto indent and add new lines automatically
+(setq next-line-add-newlines t)
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
+;; Flycheck
+(use-package flycheck
+             :ensure t
+             :init
+             (global-flycheck-mode))
+(use-package flycheck-pos-tip
+  :ensure t
+  :init
+  (with-eval-after-load 'flycheck
+        (flycheck-pos-tip-mode)))
+  #+end_src
+* Company
+  #+begin_src emacs-lisp
+	(use-package company
+	  :diminish company-mode
+	  :after lsp-mode
+	  :hook (lsp-mode . company-mode)
+	  :bind
+	  (:map company-active-map
+			("TAB" . company-complete-select))
+	  (:map lsp-mode-map
+			("TAB" . company-indent-or-complete-common))
+	  :custom
+	  (lsp-enable-on-type-formatting nil)
+	  (company-minimum-prefix-length 2)
+	  (company-tooltip-align-annotations t)
+	  (company-idle-delay 0.5)
+	  (company-require-match 'never)
+	  (company-show-numbers t))
+
+	(use-package company-box
+	  :diminish company-box-mode
+	  :requires frame-local
+	  :hook (company-mode . company-box-mode))
+  #+end_src
+* Quickrun
+  #+begin_src emacs-lisp
+  (use-package quickrun
+    :init
+    (global-set-key (kbd "s-<return>") 'quickrun))
+  #+end_src
+* Spell Check
+  #+begin_src emacs-lisp
+  (use-package langtool
+    :config
+    (setq langtool-java-classpath "/usr/share/java/languagetool:/usr/share/java/languagetool/*")
+    (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar"))
+  #+end_src
+* Languages
+** LSP Mode
+#+begin_src emacs-lisp
+  (use-package flycheck
+	:init (global-flycheck-mode))
+
+  (defun sica/lsp-mode-setup ()
+	(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbol))
+	(lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+	:commands (lsp lsp-deferred)
+	:hook ((lsp-mode . sica/lsp-mode-setup)
+		   (prog-major-mode . lsp-prog-major-mode-enable)
+		   (vhdl-mode . lsp)
+		   (verilog-mode . lsp)
+		   (c++-mode . lsp)
+		   (c-mode . lsp)
+		   (cuda-mode . lsp)
+		   (python-mode . lsp)
+		   (java-mode . lsp)
+		   (latex-mode . lsp)
+		   (lsp-mode . lsp-enable-which-key-integration))
+	:init
+	(setq lsp-keymap-prefix "C-c l")
+	:config
+	(lsp-enable-which-key-integration t))
+
+  (use-package lsp-ui
+	:hook (lsp . lsp-ui-mode)
+	:commands lsp-ui-mode
+	:custom
+	(lsp-ui-doc-position 'bottom))
+
+  (use-package lsp-ivy)
+
+  (use-package lsp-treemacs
+	:after lsp)
+
+  (sica/leader-key-def
+	"l" '(:ignore t :which-key "lsp")
+	"ld" 'xref-find-definitions
+	"lr" 'xref-find-references
+	"ln" 'lsp-ui-find-next-reference
+	"lp" 'lsp-ui-find-prev-reference
+	"ls" 'counsel-imenu
+	"le" 'lsp-ui-flycheck-list
+	"lS" 'lsp-ui-sideline-mode
+	"lX" 'lsp-execute-code-action)
+
+  (use-package dap-mode
+	:after lsp-mode
+	:config
+	(dap-auto-configure-mode))
+#+end_src
+** Verilog/SystemVerilog
+#+begin_src emacs-lisp
+  (defun verilog-hook()
+	(setq tab-width 2))
+  (add-hook 'verilog-mode-hook 'verilog-hook)
+
+  (use-package verilog-mode
+	:mode (("\\.[s]*v\\'" . verilog-mode))
+	:config
+	(setq verilog-indent-level 2)
+	(setq verilog-indent-level-behavioral 2)
+	(setq verilog-indent-level-declaration 2)
+	(setq verilog-indent-level-directive 2)
+	(setq verilog-indent-level-module 2)
+	(setq verilog-indent-begin-after-if nil)
+	(setq verilog-case-indent 2)
+	(setq verilog-auto-lineup nil)
+	(setq verilog-auto-newline nil)
+	(setq verilog-indent-lists nil))
+#+end_src
+
+** VHDL
+#+begin_src emacs-lisp
+  ;;(lsp-register-client (make-lsp-client :new-connection (lsp-stdio-connection '("vhdl-tool" "lsp"))
+  ;;                                      :major-modes '(vhdl-mode)
+  ;;                                      :language-id "VHDL"
+  ;;                                      :server-id 'lsp-vhdl-mode))
+#+end_src
+** C/C++
+#+begin_src emacs-lisp
+  (defun c-hook ()
+	(setq tab-width 4))
+  (add-hook 'c-mode-hook 'c-hook)
+
+  (use-package ccls)
+  (setq-default tab-width 4
+				c-default-style "linux"
+				c-basic-offset 4)
+  (add-to-list 'auto-mode-alist '("\\.cu\\'" . c-mode))
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))
+  (add-to-list 'auto-mode-alist '("\\.c\\'" . c-mode))
+  (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+#+end_src
+** Python
+#+begin_src emacs-lisp
+  (defvar pyls (executable-find "pyls")
+	"Python Language Server executable path.")
+#+end_src
+** Java
+#+begin_src emacs-lisp
+  (use-package lsp-java
+	:after lsp)
+
+  (use-package dap-java
+	:ensure nil)
+#+end_src
+** Javascript/Typescript
+#+begin_src emacs-lisp
+  (use-package js2-mode
+	:init
+	'(js2-mode . (js-ts "--strict")))
+
+  (use-package typescript-mode
+	:init
+	'(typescript-mode . (js-ts "--strict")))
+#+end_src
+** Haskell
+#+begin_src emacs-lisp
+  ;;(defvar haskell-exe (executable-find "REPLACE"))
+  ;;(use-package haskell-mode)
+  ;;(add-to-list 'eglot-server-programs
+  ;;             '(haskell-mode . (haskell-exe "")))
+#+end_src
+** Latex
+#+begin_src emacs-lisp
+  (use-package tex
+    :ensure auctex
+    :init
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    (setq reftex-plug-into-AUCTeX t))
+
+  (use-package reftex
+    :config
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode))
+#+end_src
+* Ligatures
+#+begin_src emacs-lisp
+  (use-package ligature
+	:load-path "~/.emacs.d/ligature/"
+	:config
+	;; Enable the "www" ligature in every possible major mode
+	(ligature-set-ligatures 't '("www"))
+	;; Enable traditional ligature support in eww-mode, if the
+	;; `variable-pitch' face supports it
+	(ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+	;; Enable all Cascadia Code ligatures in programming modes
+	(ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+						 ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+						 "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+						 "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+						 "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+						 "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+						 "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+						 "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+						 ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+						 "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+						 "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+						 "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+						 "\\" "://"))
+	(ligature-set-ligatures 'cc-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+					   ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+					   "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+					   "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+					   "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+					   "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+					   "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+					   "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+					   ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+					   "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+					   "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+					   "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+					   "\\" "://"))
+	;; Enables ligature checks globally in all buffers. You can also do it
+	;; per mode with `ligature-mode'.
+	(global-ligature-mode t))
+#+end_src
+
+* Stop Custom Set Variable Cluttering Config
+#+begin_src emacs-lisp
+  (setq custom-file (concat user-emacs-directory "/custom.el"))
+#+end_src
