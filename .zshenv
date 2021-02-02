@@ -1,5 +1,8 @@
 export LFS=/mnt/lfs
-export PATH=$PATH:~/inferno-os/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:~/intelFPGA_pro/19.3/modelsim_ase/bin
+
+source /opt/Xilinx/Vivado/2020.2/settings64.sh
+
+export PATH=~/CS370/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:~/intelFPGA_pro/19.3/modelsim_ase/bin:$PATH
 #/opt/symbiotic_20200206A/bin
 export TERM=termite
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
