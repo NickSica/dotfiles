@@ -254,8 +254,6 @@
                                     (load-file "~/.emacs.d/init.el")))
 (global-set-key (kbd "C-c a t") 'ansi-term)
 (global-set-key (kbd "C-c C-c") 'lazy-highlight-cleanup)
-(global-set-key (kbd "C-c TAB") 'previous-buffer)
-(global-set-key (kbd "C-z") 'undo)
 
 ;; Window management
 (global-set-key (kbd "C-c /") 'split-window-right)
@@ -440,49 +438,45 @@
 #+end_src
 * Unsorted Shit
 #+begin_src emacs-lisp
-;; PATH
-(let((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
-  (setenv "PATH" path)
-  (setq exec-path
-        (append
-         (split-string-and-unquote path ":")
-         exec-path)))
+  ;; PATH
+  (let((path (shell-command-to-string ". ~/.zshrc; echo -n $PATH")))
+	(setenv "PATH" path)
+	(setq exec-path
+		  (append
+		   (split-string-and-unquote path ":")
+		   exec-path)))
 
-;; Some term enhancement
-(defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
-  (if(memq (process-status proc) '(signal exit))
-      (let((buffer (process-buffer proc)))
-        ad-do-it
-        (kill-buffer buffer))
-    ad-do-it))
-(ad-activate 'term-sentinel)
+  ;; Some term enhancement
+  (defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
+	(if(memq (process-status proc) '(signal exit))
+		(let((buffer (process-buffer proc)))
+		  ad-do-it
+		  (kill-buffer buffer))
+	  ad-do-it))
+  (ad-activate 'term-sentinel)
 
-(defadvice ansi-term (before force-bash)
-  (interactive (list "/bin/zsh")))
-(ad-activate 'ansi-term)
+  (defadvice ansi-term (before force-bash)
+	(interactive (list "/bin/zsh")))
+  (ad-activate 'ansi-term)
 
-;; Anzu for search matching
-(use-package anzu
-             :ensure t
-             :config
-             (global-anzu-mode 1)
-             (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-             (global-set-key [remap query-replace] 'anzu-query-replace))
+  ;; Anzu for search matching
+  (use-package anzu
+			   :ensure t
+			   :config
+			   (global-anzu-mode 1)
+			   (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+			   (global-set-key [remap query-replace] 'anzu-query-replace))
 
-;;; Auto indent and add new lines automatically
-(setq next-line-add-newlines t)
-(define-key global-map (kbd "RET") 'newline-and-indent)
-
-;; Flycheck
-(use-package flycheck
-             :ensure t
-             :init
-             (global-flycheck-mode))
-(use-package flycheck-pos-tip
-  :ensure t
-  :init
-  (with-eval-after-load 'flycheck
-        (flycheck-pos-tip-mode)))
+  ;; Flycheck
+  (use-package flycheck
+			   :ensure t
+			   :init
+			   (global-flycheck-mode))
+  (use-package flycheck-pos-tip
+	:ensure t
+	:init
+	(with-eval-after-load 'flycheck
+		  (flycheck-pos-tip-mode)))
   #+end_src
 * Company
   #+begin_src emacs-lisp
@@ -492,14 +486,11 @@
 	  :hook (lsp-mode . company-mode)
 	  :bind
 	  (:map company-active-map
-			("TAB" . company-complete-select))
-	  (:map lsp-mode-map
-			("TAB" . company-indent-or-complete-common))
+			("TAB" . company-complete-selection))
 	  :custom
-	  (lsp-enable-on-type-formatting nil)
-	  (company-minimum-prefix-length 2)
+	  (company-minimum-prefix-length 1)
 	  (company-tooltip-align-annotations t)
-	  (company-idle-delay 0.5)
+	  (company-idle-delay 0.0)
 	  (company-require-match 'never)
 	  (company-show-numbers t))
 
@@ -522,6 +513,23 @@
     (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar"))
   #+end_src
 * Languages
+** General Tweaks
+#+begin_src emacs-lisp
+  (setq-default tab-width 4)
+  (setq electric-indent-mode nil)
+  ;;(define-key global-map (kbd "RET") 'newline)
+  ;; Auto indent and add new lines automatically
+  (setq next-line-add-newlines t)
+  (define-key global-map (kbd "RET") 'newline-and-indent)
+  (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
+
+  (sica/leader-key-def
+	"i" '(:ignore t :which-key "indent")
+	"ij" 'newline
+	"s"   '(:ignore t :which-key "lang specific")
+	"sc"  '(:ignore t :which-key "C/C++")
+	"sci" 'c-indent-line-or-region)
+#+end_src
 ** LSP Mode
 #+begin_src emacs-lisp
   (use-package flycheck
@@ -547,7 +555,9 @@
 	:init
 	(setq lsp-keymap-prefix "C-c l")
 	:config
-	(lsp-enable-which-key-integration t))
+	(setq lsp-enable-which-key-integration t)
+	(setq lsp-enable-on-type-formatting nil)
+	(setq lsp-enable-indentation nil))
 
   (use-package lsp-ui
 	:hook (lsp . lsp-ui-mode)
@@ -578,8 +588,14 @@
 #+end_src
 ** Verilog/SystemVerilog
 #+begin_src emacs-lisp
+  (defun sica/insert-tab()
+	(interactive)
+	(insert "\t"))
+
   (defun verilog-hook()
-	(setq tab-width 2))
+	(setq tab-width 2)
+	(define-key verilog-mode-map (kbd "TAB") #'sica/insert-tab))
+
   (add-hook 'verilog-mode-hook 'verilog-hook)
 
   (use-package verilog-mode
@@ -606,18 +622,19 @@
 #+end_src
 ** C/C++
 #+begin_src emacs-lisp
-  (defun c-hook ()
-	(setq tab-width 4))
-  (add-hook 'c-mode-hook 'c-hook)
+  (defun sica/c-mode-hook ()
+    (setq tab-width 4))
+  (add-hook 'c-mode-hook #'sica/c-mode-hook)
 
   (use-package ccls)
-  (setq-default tab-width 4
-				c-default-style "linux"
-				c-basic-offset 4)
+  (setq c-default-style "linux"
+	c-basic-offset 4)
   (add-to-list 'auto-mode-alist '("\\.cu\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.c\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+
+  ;(define-key c-mode-base-map (kbd "TAB") 'tab-to-tab-stop)
 #+end_src
 ** Python
 #+begin_src emacs-lisp

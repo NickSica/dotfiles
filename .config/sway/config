@@ -221,3 +221,4 @@ bar {
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
 
 #include /etc/sway/config.d/*
+exec wayvnc 192.168.1.196 5901
