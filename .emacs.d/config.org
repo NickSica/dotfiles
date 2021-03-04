@@ -64,7 +64,6 @@
 **** Always use tabs for indentation
 #+begin_src emacs-lisp
   (setq-default indent-tabs-mode t)
-  (setq-default backward-delete-char-untabify-method 'hungry)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
   ;;(global-whitespace-mode 1)
 #+end_src
@@ -183,57 +182,58 @@
 
 * Evil
   #+begin_src emacs-lisp
-  ;; Start in normal mode
-  ;;(defun sica/evil-hook ()
-  ;;  (dolist (mode '(mode-to-start-in-normal-mode)))
-  ;;  (add-to-list 'evil-emacs-state-modes mode))
+	;; Start in normal mode
+	;;(defun sica/evil-hook ()
+	;;  (dolist (mode '(mode-to-start-in-normal-mode)))
+	;;  (add-to-list 'evil-emacs-state-modes mode))
 
-  (use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
-    (setq evil-want-fine-undo t)
-    (setq evil-undo-system 'undo-tree)
-    (setq evil-search-module 'evil-search)
-    ;;:hook (evil-mode . sica/evil-hook)
-    :config
-    (evil-mode 1)
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-    (define-key evil-motion-state-map (kbd "SPC") nil)
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
-    ;;(evil-set-initial-state 'messages-buffer-mode 'normal)
-    ;;(evil-set-initial-state 'dashboard-mode 'normal))
+	(use-package evil
+	  :init
+	  (setq evil-want-integration t)
+	  (setq evil-want-keybinding nil)
+	  (setq evil-want-C-u-scroll t)
+	  (setq evil-want-C-i-jump nil)
+	  (setq evil-want-fine-undo t)
+	  (setq evil-undo-system 'undo-tree)
+	  (setq evil-search-module 'evil-search)
+	  ;;:hook (evil-mode . sica/evil-hook)
+	  :config
+	  (evil-mode 1)
+	  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+	  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+	  (define-key evil-motion-state-map (kbd "SPC") nil)
+	  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+	  (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+	  ;;(evil-set-initial-state 'messages-buffer-mode 'normal)
+	  ;;(evil-set-initial-state 'dashboard-mode 'normal))
 
-  (use-package evil-collection
-    :after evil
-    :custom
-    (evil-collection-bind-tab-p nil)
-    :config
-    (evil-collection-init))
+	(use-package evil-collection
+	  :after evil
+	  :custom
+	  (evil-collection-bind-tab-p nil)
+	  :config
+	  (evil-collection-init))
   #+end_src
 
 * General(the keybinding package)
   #+begin_src emacs-lisp
-    (use-package general
-       :config
-       (general-evil-setup t)
+	(use-package general
+	  :config
+	  (general-evil-setup t)
 
-       (general-create-definer sica/leader-key-def
-         :keymaps '(normal insert visual emacs)
-         :prefix "SPC"
-         :global-prefix "C-SPC"))
+	  (general-create-definer sica/leader-key-def
+		:keymaps '(normal insert visual emacs)
+		:prefix "SPC"
+		:global-prefix "C-SPC"))
 
-    (sica/leader-key-def
-      "t"   '(:ignore t :which-key "toggles")
-      "b"   '(:ignore t :which-key "buffers")
-      "bd"  'kill-this-buffer
-      "bk"  'kill-buffer
-      "bn"  'evil-next-buffer
-      "bp"  'evil-prev-buffer)
+	(sica/leader-key-def
+	  "t"   '(:ignore t :which-key "toggles")
+	  "b"   '(:ignore t :which-key "buffers")
+	  "bd"  'kill-this-buffer
+	  "bk"  'kill-buffer
+	  "bn"  'evil-next-buffer
+	  "bp"  'evil-prev-buffer)
+
   #+end_src
 
 * Other Stuffs
@@ -601,6 +601,7 @@
   (use-package verilog-mode
 	:mode (("\\.[s]*v\\'" . verilog-mode))
 	:config
+	(define-key verilog-mode-map (kbd "<backspace>") 'evil-delete-backward-char-and-join)
 	(setq verilog-indent-level 2)
 	(setq verilog-indent-level-behavioral 2)
 	(setq verilog-indent-level-declaration 2)
@@ -623,7 +624,7 @@
 ** C/C++
 #+begin_src emacs-lisp
   (defun sica/c-mode-hook ()
-    (setq tab-width 4))
+	(setq tab-width 4))
   (add-hook 'c-mode-hook #'sica/c-mode-hook)
 
   (use-package ccls)
@@ -633,6 +634,7 @@
   (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.c\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+  (define-key c-mode-map (kbd "DEL") 'evil-delete-backward-char-and-join)
 
   ;(define-key c-mode-base-map (kbd "TAB") 'tab-to-tab-stop)
 #+end_src
