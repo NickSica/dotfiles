@@ -52,7 +52,7 @@
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (tooltip-mode -1)
-  (global-linum-mode 1)
+  (global-display-line-numbers-mode 1)
   (set-fringe-mode 10)
 #+end_src
 **** Smooth Scrolling and Bar Cursor
@@ -182,37 +182,44 @@
 
 * Evil
   #+begin_src emacs-lisp
-	;; Start in normal mode
-	;;(defun sica/evil-hook ()
-	;;  (dolist (mode '(mode-to-start-in-normal-mode)))
-	;;  (add-to-list 'evil-emacs-state-modes mode))
+		;; Start in normal mode
+		;;(defun sica/evil-hook ()
+		;;  (dolist (mode '(mode-to-start-in-normal-mode)))
+		;;  (add-to-list 'evil-emacs-state-modes mode))
 
-	(use-package evil
-	  :init
-	  (setq evil-want-integration t)
-	  (setq evil-want-keybinding nil)
-	  (setq evil-want-C-u-scroll t)
-	  (setq evil-want-C-i-jump nil)
-	  (setq evil-want-fine-undo t)
-	  (setq evil-undo-system 'undo-tree)
-	  (setq evil-search-module 'evil-search)
-	  ;;:hook (evil-mode . sica/evil-hook)
-	  :config
-	  (evil-mode 1)
-	  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-	  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-	  (define-key evil-motion-state-map (kbd "SPC") nil)
-	  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-	  (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
-	  ;;(evil-set-initial-state 'messages-buffer-mode 'normal)
-	  ;;(evil-set-initial-state 'dashboard-mode 'normal))
+		(use-package goto-chg)
 
-	(use-package evil-collection
-	  :after evil
-	  :custom
-	  (evil-collection-bind-tab-p nil)
-	  :config
-	  (evil-collection-init))
+		(use-package evil
+			:init
+			(setq evil-want-integration t)
+			(setq evil-want-keybinding nil)
+			(setq evil-want-C-u-scroll t)
+			(setq evil-want-C-i-jump nil)
+			(setq evil-want-fine-undo t)
+			(setq evil-undo-system 'undo-tree)
+			(setq evil-search-module 'evil-search)
+			;;:hook (evil-mode . sica/evil-hook)
+			:config
+			(evil-mode 1)
+			(define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+			(define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+			(define-key evil-motion-state-map (kbd "SPC") nil)
+			(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+			(evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+		;;(evil-set-initial-state 'messages-buffer-mode 'normal)
+		;;(evil-set-initial-state 'dashboard-mode 'normal))
+
+		(use-package evil-numbers
+			:config
+			(define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt))
+			;;(define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/dec-at-pt))
+
+		(use-package evil-collection
+			:after evil
+			:custom
+			(evil-collection-bind-tab-p nil)
+			:config
+			(evil-collection-init))
   #+end_src
 
 * General(the keybinding package)
@@ -342,15 +349,16 @@
   #+end_src
 * Org Mode Configuration
   #+begin_src emacs-lisp
-  (defun enhance-ui-for-orgmode()
-    "Enhance UI for orgmode."
-    (org-bullets-mode 1)
-    (org-autolist-mode 1)
-    (linum-mode nil)
-    (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
-            set-face-attribute face nil
-            :height 1.0
-            :background nil))
+	(defun enhance-ui-for-orgmode()
+	  "Enhance UI for orgmode."
+	  (org-bullets-mode 1)
+	  (org-autolist-mode 1)
+	  (linum-mode nil)
+	  (setq tab-width 2)
+	  (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
+			  set-face-attribute face nil
+			  :height 1.0
+			  :background nil))
   #+end_src
 
 ** Additional Packages
@@ -532,59 +540,60 @@
 #+end_src
 ** LSP Mode
 #+begin_src emacs-lisp
-  (use-package flycheck
-	:init (global-flycheck-mode))
+	(use-package flycheck
+		:init (global-flycheck-mode))
 
-  (defun sica/lsp-mode-setup ()
-	(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbol))
-	(lsp-headerline-breadcrumb-mode))
+	(defun sica/lsp-mode-setup ()
+		(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbol))
+		(lsp-headerline-breadcrumb-mode))
 
-  (use-package lsp-mode
-	:commands (lsp lsp-deferred)
-	:hook ((lsp-mode . sica/lsp-mode-setup)
-		   (prog-major-mode . lsp-prog-major-mode-enable)
-		   (vhdl-mode . lsp)
-		   (verilog-mode . lsp)
-		   (c++-mode . lsp)
-		   (c-mode . lsp)
-		   (cuda-mode . lsp)
-		   (python-mode . lsp)
-		   (java-mode . lsp)
-		   (latex-mode . lsp)
-		   (lsp-mode . lsp-enable-which-key-integration))
-	:init
-	(setq lsp-keymap-prefix "C-c l")
-	:config
-	(setq lsp-enable-which-key-integration t)
-	(setq lsp-enable-on-type-formatting nil)
-	(setq lsp-enable-indentation nil))
+	(use-package lsp-mode
+		:commands (lsp lsp-deferred)
+		:hook ((lsp-mode . sica/lsp-mode-setup)
+			 (prog-major-mode . lsp-prog-major-mode-enable)
+			 (vhdl-mode . lsp-deferred)
+			 (verilog-mode . lsp-deferred)
+			 (c++-mode . lsp-deferred)
+			 (c-mode . lsp-deferred)
+			 (cuda-mode . lsp-deferred)
+			 (java-mode . lsp-deferred)
+			 (latex-mode . lsp-deferred)
+			 (lsp-mode . lsp-enable-which-key-integration))
+		:init
+		(setq lsp-keymap-prefix "C-c l")
+		:config
+		(setq lsp-enable-which-key-integration t)
+		(setq lsp-enable-on-type-formatting nil)
+		(setq lsp-enable-indentation nil)
+		(setq gc-cons-threshold 100000000)
+		(setq read-process-output-max (* 1024 1024)))
 
-  (use-package lsp-ui
-	:hook (lsp . lsp-ui-mode)
-	:commands lsp-ui-mode
-	:custom
-	(lsp-ui-doc-position 'bottom))
+	(use-package lsp-ui
+		:hook (lsp . lsp-ui-mode)
+		:commands lsp-ui-mode
+		:custom
+		(lsp-ui-doc-position 'bottom))
 
-  (use-package lsp-ivy)
+	(use-package lsp-ivy)
 
-  (use-package lsp-treemacs
-	:after lsp)
+	(use-package lsp-treemacs
+		:after lsp)
 
-  (sica/leader-key-def
-	"l" '(:ignore t :which-key "lsp")
-	"ld" 'xref-find-definitions
-	"lr" 'xref-find-references
-	"ln" 'lsp-ui-find-next-reference
-	"lp" 'lsp-ui-find-prev-reference
-	"ls" 'counsel-imenu
-	"le" 'lsp-ui-flycheck-list
-	"lS" 'lsp-ui-sideline-mode
-	"lX" 'lsp-execute-code-action)
+	(sica/leader-key-def
+		"l" '(:ignore t :which-key "lsp")
+		"ld" 'xref-find-definitions
+		"lr" 'xref-find-references
+		"ln" 'lsp-ui-find-next-reference
+		"lp" 'lsp-ui-find-prev-reference
+		"ls" 'counsel-imenu
+		"le" 'lsp-ui-flycheck-list
+		"lS" 'lsp-ui-sideline-mode
+		"lX" 'lsp-execute-code-action)
 
-  (use-package dap-mode
-	:after lsp-mode
-	:config
-	(dap-auto-configure-mode))
+	(use-package dap-mode
+		:after lsp-mode
+		:config
+		(dap-auto-configure-mode))
 #+end_src
 ** Verilog/SystemVerilog
 #+begin_src emacs-lisp
@@ -640,8 +649,11 @@
 #+end_src
 ** Python
 #+begin_src emacs-lisp
-  (defvar pyls (executable-find "pyls")
-	"Python Language Server executable path.")
+	(use-package lsp-pyright
+		:hook
+		(python-mode . (lambda ()
+						 (require 'lsp-pyright)
+						 (lsp-deferred))))
 #+end_src
 ** Java
 #+begin_src emacs-lisp
