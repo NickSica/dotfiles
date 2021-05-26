@@ -10,5 +10,7 @@ call plug#end()
 if(has("termguicolors"))
   set termguicolors
 endif
+
 source $HOME/.config/nvim/general/settings.vim
 source $HOME/.config/nvim/keys/mappings.vim
+let mapleader = "\<Space>"

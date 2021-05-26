@@ -68,6 +68,12 @@
   ;;(global-whitespace-mode 1)
 #+end_src
 
+* Fix Native Comp Issues
+#+begin_src emacs-lisp
+	(setq comp-async-report-warnings-errors nil)
+	(setq comp-deferred-compilation-deny-list '("powerline"))
+#+end_src
+
 * Advanced UI Config
 ** Dashboard
    #+begin_src emacs-lisp
@@ -212,7 +218,7 @@
 		(use-package evil-numbers
 			:config
 			(define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt))
-			;;(define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/dec-at-pt))
+		;;(define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/dec-at-pt))
 
 		(use-package evil-collection
 			:after evil
@@ -220,27 +226,30 @@
 			(evil-collection-bind-tab-p nil)
 			:config
 			(evil-collection-init))
+
+		;; Treat '_' as a word character
+		(modify-syntax-entry ?_ "w")
   #+end_src
 
 * General(the keybinding package)
   #+begin_src emacs-lisp
-	(use-package general
-	  :config
-	  (general-evil-setup t)
+		(use-package general
+			:config
+			(general-evil-setup t)
 
-	  (general-create-definer sica/leader-key-def
-		:keymaps '(normal insert visual emacs)
-		:prefix "SPC"
-		:global-prefix "C-SPC"))
+			(general-create-definer sica/leader-key-def
+			:keymaps '(normal insert visual emacs)
+			:prefix "SPC"
+			:global-prefix "C-SPC"))
 
-	(sica/leader-key-def
-	  "t"   '(:ignore t :which-key "toggles")
-	  "b"   '(:ignore t :which-key "buffers")
-	  "bd"  'kill-this-buffer
-	  "bk"  'kill-buffer
-	  "bn"  'evil-next-buffer
-	  "bp"  'evil-prev-buffer)
-
+		(sica/leader-key-def
+			"t"   '(:ignore t :which-key "toggles")
+			"b"   '(:ignore t :which-key "buffers")
+			"bd"  'kill-this-buffer
+			"bk"  'kill-buffer
+			"bn"  'evil-next-buffer
+			"bp"  'evil-prev-buffer
+			","   'consult-buffer)
   #+end_src
 
 * Other Stuffs
@@ -279,51 +288,60 @@
                                   (org-agenda nil "c")))
   #+end_src
 
-* Ivy/Counsel
+* Vertico/Consult
   #+begin_src emacs-lisp
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-           :map ivy-minibuffer-map
-           ("TAB" . ivy-alt-done)
-           ("C-l" . ivy-alt-done)
-           ("C-j" . ivy-next-line)
-           ("C-k" . ivy-previous-line)
-           :map ivy-switch-buffer-map
-           ("C-k" . ivy-previous-line)
-           ("C-l" . ivy-done)
-           ("C-d" . ivy-switch-buffer-kill)
-           :map ivy-reverse-i-search-map
-           ("C-k" . ivy-previous-line)
-           ("C-d" . ivy-reverse-i-search-kill))
-    :init
-    (ivy-mode 1)
-    :config
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-wrap t)
-    (setq ivy-count-format "(%d/%d) ")
-    (setq enable-recursive-minibuffers t)
+		(defun sica/minibuffer-backward-kill (arg)
+			"When minibuffer is completing a file name delete up to parent
+		folder, otherwise delete a character backward"
+			(interactive "p")
+			(if minibuffer-completing-file-name
+				(if (string-match-p "/." (minibuffer-contents))
+					(zap-up-to-char (- arg) ?/)
+				(delete-minibuffer-contents))
+			(delete-backward-char arg)))
 
-    ;; Different regex strategies
-    (push '(completion-at-point . ivy--regex-fuzzy) ivy-re-builders-alist) ;; Doesn't seem to work?
-    (push '(swiper . ivy--ignore-order) ivy-re-builders-alist)
-    (push '(counsel-M-x . ivy--regex-ignore-order) ivy-re-builders-alist))
+		(use-package vertico
+			:bind (:map vertico-map
+				 ("C-j" . vertico-next)
+				 ("C-k" . vertico-previous)
+				 ("C-f" . vertico-exit)
+				 :map minibuffer-local-map
+				 ("M-h" . backward-kill-word)
+				 ("<Backspace>" . sica/minibuffer-backward-kill))
+			:custom
+			(vertico-cycle t)
+			:init
+			(vertico-mode))
 
-  (use-package counsel
-    :bind (("M-x" . counsel-M-x))
-    :config
-    (setq ivy-initial-inputs-alist nil))
+		(use-package savehist
+			:init
+			(savehist-mode))
 
-  (use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
+		(use-package marginalia
+			:after vertico
+			:custom
+			(marginalia-annotators '(marginalia-annotators-heavy
+									 marginalia-annotators-light nil))
+			:init
+			(marginalia-mode))
 
-  ;;(general-define-key
-  ;;  :keymaps 'minibuffer-local-map
-  ;;  ("C-r" . 'counsel-minibuffer-history))
+		(defun sica/get-project-root ()
+			(when (fboundp 'projectile-project-root)
+			(projectile-project-root)))
 
-  (sica/leader-key-def
-    ","   'counsel-ibuffer)
+		(use-package consult
+			;:straight t
+			:demand t
+			:bind (("C-s" . consult-line)
+				 ("C-M-l" . consult-imenu)
+				 ("C-M-j" . persp-switch-to-buffer*)
+				 :map minibuffer-local-map
+				 ("C-r" . consult-history))
+			:custom
+			(consult-project-root-function #'sica/get-project-root)
+			(completion-in-region-function #'consult-completion-in-region)
+			:config
+			(consult-preview-mode))
   #+end_src
 
 * Which-Key Configuration
@@ -337,78 +355,71 @@
 
 * Helpful Configuration
   #+begin_src emacs-lisp
-  (use-package helpful
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
-    :bind
-    ([remap describe-function] . counsel-describe-function)
-    ([remap describe-command] . helpful-command)
-    ([remap describe-variable] . counsel-describe-variable)
-    ([remap describe-key] . helpful-key))
+		(use-package helpful
+			:bind
+			([remap describe-function] . helpful-function)
+			([remap describe-symbol] . helpful-symbol)
+			([remap describe-variable] . helpful-variable)
+			([remap describe-command] . helpful-command)
+			([remap describe-key] . helpful-key))
   #+end_src
+
 * Org Mode Configuration
   #+begin_src emacs-lisp
-	(defun enhance-ui-for-orgmode()
-	  "Enhance UI for orgmode."
-	  (org-bullets-mode 1)
-	  (org-autolist-mode 1)
-	  (linum-mode nil)
-	  (setq tab-width 2)
-	  (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
-			  set-face-attribute face nil
-			  :height 1.0
-			  :background nil))
-  #+end_src
+		(defun enhance-ui-for-orgmode()
+			"Enhance UI for orgmode."
+			(org-bullets-mode 1)
+			(org-autolist-mode 1)
+			(linum-mode nil)
+			(setq tab-width 2)
+			(dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
+				set-face-attribute face nil
+			:height 1.0
+			:background nil))
 
-** Additional Packages
-   #+begin_src emacs-lisp
-   (use-package org-autolist
-     :ensure t)
-   (use-package org-bullets
-     :ensure t)
-  #+end_src
+		(use-package org-autolist
+			:ensure t)
+		(use-package org-bullets
+			:ensure t)
 
-** OrgMode Configs
-   #+begin_src emacs-lisp
-   (add-to-list 'org-structure-template-alist
-                '("o" "#+TITLE: ?\n#+DATE: "))
+		(add-to-list 'org-structure-template-alist
+					 '("o" "#+TITLE: ?\n#+DATE: "))
 
-   (dolist (hook '(text-mode-hook))
-           (add-hook hook (lambda () (flyspell-mode 1))))
+		(dolist (hook '(text-mode-hook))
+			(add-hook hook (lambda () (flyspell-mode 1))))
 
-   (add-hook 'org-mode-hook 'enhance-ui-for-orgmode)
+		(add-hook 'org-mode-hook 'enhance-ui-for-orgmode)
 
-   (defun filter-org-skip-subtree-if-priority (priority)
-     "Skip an agenda subtree if it has a priority of PRIORITY.
-      PRIORITY may be one of the characters ?A, ?B, or ?C."
-     (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-           (pri-value (* 1000 (- org-lowest-priority priority)))
-           (pri-current (org-get-priority (thing-at-point 'line t))))
-          (if (= pri-value pri-current)
-              subtree-end
-              nil)))
+		(defun filter-org-skip-subtree-if-priority (priority)
+			"Skip an agenda subtree if it has a priority of PRIORITY.
+				PRIORITY may be one of the characters ?A, ?B, or ?C."
+			(let ((subtree-end (save-excursion (org-end-of-subtree t)))
+				(pri-value (* 1000 (- org-lowest-priority priority)))
+				(pri-current (org-get-priority (thing-at-point 'line t))))
+			(if (= pri-value pri-current)
+				subtree-end
+				nil)))
 
-   (setq org-agenda-window-setup 'only-window)
-   (setq org-agenda-custom-commands
-         '(("c" "Custom agenda view"
-           ((tags "PRIORITY=\"A\""
-             ((org-agenda-overriding-header "High-priority unfinished tasks:")
-              (org-agenda-skip-function '(org-agenda-skip-if nil '(todo done)))))
-            (agenda "")
-            (alltodo ""
-              ((org-agenda-skip-function '(or (filter-org-skip-subtree-if-priority ?A)
-                                              (org-agenda-skip-if nil '(scheduled deadline))))))))))
-   (setq org-return-follows-link t)
-   (setq org-hide-emphasis-markers t)
-   (setq org-html-validation-link nil)
-   (setq org-todo-keywords
-         '((sequence "TODO" "WORKING" "HOLD" "|" "DONE")))
-   (setq org-todo-keyword-faces
-         '(("TODO"    . "#eb4d4b")
-           ("WORKING" . "#f0932b")
-           ("HOLD"    . "#eb4d4b")
-           ("DONE"    . "#6ab04c")))
+		(setq org-agenda-window-setup 'only-window)
+		(setq org-agenda-custom-commands
+				'(("c" "Custom agenda view"
+				 ((tags "PRIORITY=\"A\""
+						((org-agenda-overriding-header "High-priority unfinished tasks:")
+						 (org-agenda-skip-function '(org-agenda-skip-if nil '(todo done)))))
+							(agenda "")
+							(alltodo ""
+									 ((org-agenda-skip-function '(or (filter-org-skip-subtree-if-priority ?A)
+																	 (org-agenda-skip-if nil '(scheduled deadline))))))))))
+		(setq org-return-follows-link t)
+		(setq org-hide-emphasis-markers t)
+		(setq org-html-validation-link nil)
+		(setq org-todo-keywords
+				'((sequence "TODO" "WORKING" "HOLD" "|" "DONE")))
+		(setq org-todo-keyword-faces
+				'(("TODO"    . "#eb4d4b")
+				("WORKING" . "#f0932b")
+				("HOLD"    . "#eb4d4b")
+				("DONE"    . "#6ab04c")))
   #+end_src
 * Projectile Configuration
   #+begin_src emacs-lisp
@@ -498,13 +509,12 @@
 	  :custom
 	  (company-minimum-prefix-length 1)
 	  (company-tooltip-align-annotations t)
-	  (company-idle-delay 0.0)
+	  (company-idle-delay 0.1)
 	  (company-require-match 'never)
 	  (company-show-numbers t))
 
 	(use-package company-box
 	  :diminish company-box-mode
-	  :requires frame-local
 	  :hook (company-mode . company-box-mode))
   #+end_src
 * Quickrun
@@ -547,9 +557,14 @@
 		(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbol))
 		(lsp-headerline-breadcrumb-mode))
 
+	;;(defun sica/lsp-compl-mode-setup ()
+	;;	(setq-local company-backends
+	;;				'(company-capf company-dabbrev company-dabbrev-code)))
+
 	(use-package lsp-mode
 		:commands (lsp lsp-deferred)
 		:hook ((lsp-mode . sica/lsp-mode-setup)
+			 (lsp-completion-mode . sica/lsp-compl-mode-setup)
 			 (prog-major-mode . lsp-prog-major-mode-enable)
 			 (vhdl-mode . lsp-deferred)
 			 (verilog-mode . lsp-deferred)
@@ -558,9 +573,11 @@
 			 (cuda-mode . lsp-deferred)
 			 (java-mode . lsp-deferred)
 			 (latex-mode . lsp-deferred)
+			 ;;(python-mode . lsp-deferred)
 			 (lsp-mode . lsp-enable-which-key-integration))
 		:init
 		(setq lsp-keymap-prefix "C-c l")
+		(setq lsp-file-watch-threshold 1500)
 		:config
 		(setq lsp-enable-which-key-integration t)
 		(setq lsp-enable-on-type-formatting nil)
@@ -578,6 +595,35 @@
 
 	(use-package lsp-treemacs
 		:after lsp)
+
+	;; Apparently should speed lsp-mode up
+	(with-eval-after-load 'lsp-mode
+		;; Enable log only for debug
+		(setq lsp-log-io nil)
+		;; Use 'evil-matchit' instead
+		;(setq lsp-enable-folding nil)
+		;; No real time syntax checking
+		;(setq lsp-diagnostic-package :none)
+		;; Handle yasnippet by myself
+		(setq lsp-enable-snippet nil)
+		;; Use 'company-ctags' only
+		;(setq lsp-completion-at-point nil)
+		;; Turn off for better performance
+		;(setq lsp-enable-symbol-highlighting nil)
+		;; Use ffip instead
+		;(setq lsp-enable-links nil)
+		;; Auto restart lsp
+		(setq lsp-restart 'auto-restart)
+		;; Require clients can be slow
+		(setq lsp-client-packages '(lsp-clients))
+		;; Don't ping lsp server too frequently
+		(defvar lsp-on-touch-time 0)
+		(defadvice lsp-on-change (around lsp-on-change-hack activate)
+		;; Don't run lsp-on-change too frequently
+		(when (> (- (float-time (current-time))
+					lsp-on-touch-time) 30)
+			(setq lsp-on-touch-time (float-time (current-time)))
+			ad-do-it)))
 
 	(sica/leader-key-def
 		"l" '(:ignore t :which-key "lsp")
@@ -649,11 +695,16 @@
 #+end_src
 ** Python
 #+begin_src emacs-lisp
-	(use-package lsp-pyright
-		:hook
-		(python-mode . (lambda ()
-						 (require 'lsp-pyright)
-						 (lsp-deferred))))
+	(use-package lsp-python-ms
+		:init (setq lsp-python-ms-auto-install-server t)
+		:hook (python-mode . (lambda ()
+							 (require 'lsp-python-ms)
+							 (lsp-deferred))))
+	;(use-package lsp-pyright
+	;  :hook
+	;  (python-mode . (lambda ()
+	;				   (require 'lsp-pyright)
+	;				   (lsp-deferred))))
 #+end_src
 ** Java
 #+begin_src emacs-lisp
