@@ -426,14 +426,10 @@
   (use-package projectile
     :diminish projectile-mode
     :config (projectile-mode)
-    :custom ((projectile-completion-system 'ivy))
     :bind-keymap
     ("C-c p" . projectile-command-map)
     :init
     (setq projectile-switch-project-action #'projectile-dired))
-
-  (use-package counsel-projectile
-    :config (counsel-projectile-mode))
 
   ;; Find a project via projectile
   (defun nick/projectile-proj-find-function(dir)
@@ -591,8 +587,6 @@
 		:custom
 		(lsp-ui-doc-position 'bottom))
 
-	(use-package lsp-ivy)
-
 	(use-package lsp-treemacs
 		:after lsp)
 
@@ -631,7 +625,7 @@
 		"lr" 'xref-find-references
 		"ln" 'lsp-ui-find-next-reference
 		"lp" 'lsp-ui-find-prev-reference
-		"ls" 'counsel-imenu
+		"ls" 'consult-imenu
 		"le" 'lsp-ui-flycheck-list
 		"lS" 'lsp-ui-sideline-mode
 		"lX" 'lsp-execute-code-action)
