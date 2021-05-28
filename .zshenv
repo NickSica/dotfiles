@@ -17,7 +17,7 @@ export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 alias qute="qutebrowser &"
 alias ls='ls --color=auto'
 alias l='ls -Fal'
-alias e='emacsclient'
+alias e='emacsclient -nc'
 alias vim='nvim'
 alias v='nvim'
 
