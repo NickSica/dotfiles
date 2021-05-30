@@ -4,7 +4,7 @@ TEMP_PATH=$PATH
 unset PATH
 source /opt/Xilinx/Vivado/2020.2/settings64.sh
 
-export PATH=~/CS370/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:~/intelFPGA_pro/19.3/modelsim_ase/bin:$TEMP_PATH:$PATH
+export PATH=~/CS370/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:/opt/intelFPGA_pro/21.1/modelsim_ase/bin:$TEMP_PATH:$PATH
 #/opt/symbiotic_20200206A/bin
 export TERM=termite
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
@@ -29,7 +29,11 @@ alias vivado="vivado -nolog -nojournal"
 ### Symbiotic EDA
 export SYMBIOTIC_LICENSE="$HOME/symbiotic_academic_license.lic"
 
-### Sway environment variables for headless
-export WLR_DRM_DEVICES=/dev/dri/card0
+### Sway environment setup
+# This forces Intel in a multi-GPU setup
+#export WLR_DRM_DEVICES=/dev/dri/card0
+# These are for headless
+export XDG_SESSION_TYPE=wayland
 export WLR_BACKENDS=headless
+#export WLR_RENDERER_ALLOW_SOFTWARE=1
 export WLR_LIBINPUT_NO_DEVICES=1
