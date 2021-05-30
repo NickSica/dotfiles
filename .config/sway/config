@@ -136,7 +136,8 @@ input * xkb_options "ctrl:swapcaps"
 #
 # Layout stuff:
 #
-    assign [class="emacs"] emacsclient
+		assign [class="emacs"] emacsclient -nc
+		assign [app_id="emacs"] workspace emacs
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
