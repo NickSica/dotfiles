@@ -38,7 +38,7 @@ set $headless HEADLESS-1
 #output $ext    resolution 1920x1080 scale 1
 output $headless resolution 1920x1080 scale 1
 
-### Input configuration       
+### Input configuration
 #
 # Example configuration:
 #
@@ -109,8 +109,10 @@ input * xkb_options "ctrl:swapcaps"
 #
 # Workspaces:
 #
+
+	set $ws1 "1: "
     # switch to workspace
-    bindsym $mod+1 workspace 1
+    bindsym $mod+1 workspace $ws1
     bindsym $mod+2 workspace emacs
     bindsym $mod+3 workspace 3
     bindsym $mod+4 workspace 4
@@ -121,7 +123,7 @@ input * xkb_options "ctrl:swapcaps"
     bindsym $mod+9 workspace 9
     bindsym $mod+0 workspace 10
     # move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace 1
+    bindsym $mod+Shift+1 move container to workspace $ws1
     bindsym $mod+Shift+2 move container to workspace emacs
     bindsym $mod+Shift+3 move container to workspace 3
     bindsym $mod+Shift+4 move container to workspace 4
@@ -136,8 +138,8 @@ input * xkb_options "ctrl:swapcaps"
 #
 # Layout stuff:
 #
-		assign [class="emacs"] emacsclient -nc
-		assign [app_id="emacs"] workspace emacs
+	assign [class="emacs"] emacsclient -nc
+	assign [app_id="emacs"] workspace emacs
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
@@ -216,9 +218,21 @@ default_floating_border none
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-     #swaybar_command swaybar
-     #status_command i3status
-		 position top
+	font "CaskaydiaCoveNerdFont"
+	position top
+	#status_command i3status
+	status_command ~/.config/sway/swaybar.sh
+
+	colors {
+		statusline #78da59
+		background #332f2e
+		separator #fff32e
+		                   #border #bg     #txt
+		focused_workspace  #332f2e #332f2e #ffba08
+		inactive_workspace #332f2e #332f2e #cde4e6
+		active_workspace   #777f8b #777f8b #cde4e6
+		urgent_workspace   #dedfe3 #dedfe3 #767e8a
+	}
 }
 
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
