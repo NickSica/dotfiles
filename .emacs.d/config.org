@@ -43,7 +43,7 @@
 ** Splash Screen and Font
 #+begin_src emacs-lisp
   (setq inhibit-startup-screen t)
-  (set-face-attribute 'default nil :font "Cascadia Code PL" :height 120)
+  (set-face-attribute 'default nil :font "CaskaydiaCoveNerdFont" :height 130)
 #+end_src
 ** UI Configuration
 **** Get rid of bars and add line numbers
