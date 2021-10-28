@@ -348,9 +348,7 @@
 				 ("C-r" . consult-history))
 			:custom
 			(consult-project-root-function #'sica/get-project-root)
-			(completion-in-region-function #'consult-completion-in-region)
-			:config
-			(consult-preview-mode))
+			(completion-in-region-function #'consult-completion-in-region))
   #+end_src
 
 * Which-Key Configuration
@@ -646,30 +644,36 @@
 #+end_src
 ** Verilog/SystemVerilog
 #+begin_src emacs-lisp
-  (defun sica/insert-tab()
-	(interactive)
-	(insert "\t"))
+	(defun sica/insert-tab()
+		(interactive)
+		(insert "\t"))
 
-  (defun verilog-hook()
-	(setq tab-width 2)
-	(define-key verilog-mode-map (kbd "TAB") #'sica/insert-tab))
+	(defun verilog-hook()
+		(setq tab-width 2)
+		(define-key verilog-mode-map (kbd "TAB") #'sica/insert-tab))
 
-  (add-hook 'verilog-mode-hook 'verilog-hook)
+	(add-hook 'verilog-mode-hook 'verilog-hook)
 
-  (use-package verilog-mode
-	:mode (("\\.[s]*v\\'" . verilog-mode))
-	:config
-	(define-key verilog-mode-map (kbd "<backspace>") 'evil-delete-backward-char-and-join)
-	(setq verilog-indent-level 2)
-	(setq verilog-indent-level-behavioral 2)
-	(setq verilog-indent-level-declaration 2)
-	(setq verilog-indent-level-directive 2)
-	(setq verilog-indent-level-module 2)
-	(setq verilog-indent-begin-after-if nil)
-	(setq verilog-case-indent 2)
-	(setq verilog-auto-lineup nil)
-	(setq verilog-auto-newline nil)
-	(setq verilog-indent-lists nil))
+	(custom-set-variables
+	 '(lsp-clients-svlangserver-launchConfiguration "verilator -sv --lint-only -Wall")
+	 '(lsp-clients-svlangserver-formatCommand "verible-verilog-format"))
+
+	(use-package lsp-verilog
+		:after lsp)
+	(use-package verilog-mode
+		:mode (("\\.[s]*v\\'" . verilog-mode))
+		:config
+		(define-key verilog-mode-map (kbd "<backspace>") 'evil-delete-backward-char-and-join)
+		(setq verilog-indent-level 2)
+		(setq verilog-indent-level-behavioral 2)
+		(setq verilog-indent-level-declaration 2)
+		(setq verilog-indent-level-directive 2)
+		(setq verilog-indent-level-module 2)
+		(setq verilog-indent-begin-after-if nil)
+		(setq verilog-case-indent 2)
+		(setq verilog-auto-lineup nil)
+		(setq verilog-auto-newline nil)
+		(setq verilog-indent-lists nil))
 #+end_src
 
 ** VHDL
