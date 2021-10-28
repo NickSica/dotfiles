@@ -11,6 +11,8 @@ if(has("termguicolors"))
   set termguicolors
 endif
 
+set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+
+let mapleader = " "
 source $HOME/.config/nvim/general/settings.vim
 source $HOME/.config/nvim/keys/mappings.vim
-let mapleader = "\<Space>"
