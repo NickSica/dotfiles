@@ -4,6 +4,8 @@ call plug#begin("~/.vim/plugged")
   Plug 'scrooloose/nerdtree'
   Plug 'ryanoasis/vim-devicons'
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+	Plug 'lambdalisue/suda.vim'
+	Plug 'tpope/vim-sleuth'
 call plug#end()
 
 " Config Section
