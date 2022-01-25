@@ -14,7 +14,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term termite
+set $term alacritty
 # Your preferred application launcher
 set $menu dmenu_run
 
@@ -110,36 +110,45 @@ input * xkb_options "ctrl:swapcaps"
 # Workspaces:
 #
 
-	set $ws1 "1: "
+	set $ws1 "1:term"
+	set $ws2 "2:code"
+	set $ws3 "3:work"
+	set $ws4 "4:web"
+	set $ws5 "5:music"
+	set $ws6 "6:docs"
+	set $ws7 "urgent"
+	set $ws8 "focused"
+	set $ws9 "default"
+	set $ws10 "default"
     # switch to workspace
     bindsym $mod+1 workspace $ws1
-    bindsym $mod+2 workspace emacs
-    bindsym $mod+3 workspace 3
-    bindsym $mod+4 workspace 4
-    bindsym $mod+5 workspace 5
-    bindsym $mod+6 workspace 6
-    bindsym $mod+7 workspace 7
-    bindsym $mod+8 workspace 8
-    bindsym $mod+9 workspace 9
-    bindsym $mod+0 workspace 10
+    bindsym $mod+2 workspace $ws2
+    bindsym $mod+3 workspace $ws3
+    bindsym $mod+4 workspace $ws4
+    bindsym $mod+5 workspace $ws5
+    bindsym $mod+6 workspace $ws6
+    bindsym $mod+7 workspace $ws7
+    bindsym $mod+8 workspace $ws8
+    bindsym $mod+9 workspace $ws9
+    bindsym $mod+0 workspace $ws10
     # move focused container to workspace
     bindsym $mod+Shift+1 move container to workspace $ws1
-    bindsym $mod+Shift+2 move container to workspace emacs
-    bindsym $mod+Shift+3 move container to workspace 3
-    bindsym $mod+Shift+4 move container to workspace 4
-    bindsym $mod+Shift+5 move container to workspace 5
-    bindsym $mod+Shift+6 move container to workspace 6
-    bindsym $mod+Shift+7 move container to workspace 7
-    bindsym $mod+Shift+8 move container to workspace 8
-    bindsym $mod+Shift+9 move container to workspace 9
-    bindsym $mod+Shift+0 move container to workspace 10
+    bindsym $mod+Shift+2 move container to workspace $ws2
+    bindsym $mod+Shift+3 move container to workspace $ws3
+    bindsym $mod+Shift+4 move container to workspace $ws4
+    bindsym $mod+Shift+5 move container to workspace $ws5
+    bindsym $mod+Shift+6 move container to workspace $ws6
+    bindsym $mod+Shift+7 move container to workspace $ws7
+    bindsym $mod+Shift+8 move container to workspace $ws8
+    bindsym $mod+Shift+9 move container to workspace $ws9
+    bindsym $mod+Shift+0 move container to workspace $ws10
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
 #
 # Layout stuff:
 #
 	assign [class="emacs"] emacsclient -nc
-	assign [app_id="emacs"] workspace emacs
+	assign [app_id="emacs"] workspace $ws2
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
@@ -218,24 +227,28 @@ default_floating_border none
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-	font "CaskaydiaCoveNerdFont"
-	position top
-	#status_command i3status
-	status_command ~/.config/sway/swaybar.sh
-
-	colors {
-		statusline #78da59
-		background #332f2e
-		separator #fff32e
-		                   #border #bg     #txt
-		focused_workspace  #332f2e #332f2e #ffba08
-		inactive_workspace #332f2e #332f2e #cde4e6
-		active_workspace   #777f8b #777f8b #cde4e6
-		urgent_workspace   #dedfe3 #dedfe3 #767e8a
-	}
+	swaybar_command waybar
 }
+#bar {
+#	font "CaskaydiaCoveNerdFont"
+#	position top
+	#status_command i3status
+#	status_command ~/.config/sway/swaybar.sh
+
+#	colors {
+#		statusline #78da59
+#		background #332f2e
+#		separator #fff32e
+		                   #border #bg     #txt
+#		focused_workspace  #332f2e #332f2e #ffba08
+#		inactive_workspace #332f2e #332f2e #cde4e6
+#		active_workspace   #777f8b #777f8b #cde4e6
+#		urgent_workspace   #dedfe3 #dedfe3 #767e8a
+#	}
+#}
 
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
 
 include /etc/sway/config.d/*
-exec wayvnc 192.168.1.196 5901
+#exec wayvnc 10.0.0.1 5901
+#exec wayvnc -u
