@@ -32,9 +32,11 @@ export SYMBIOTIC_LICENSE="$HOME/symbiotic_academic_license.lic"
 
 ### Sway environment setup
 # This forces Intel in a multi-GPU setup
-#export WLR_DRM_DEVICES=/dev/dri/card0
+export WLR_DRM_DEVICES=/dev/dri/card0
+export WLR_RENDER_DRM_DEVICE=/dev/dri/renderD128
+#export WLR_RENDERER=vulkan
 # These are for headless
-#export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_TYPE=wayland
 export WLR_BACKENDS=headless
 #export WLR_RENDERER_ALLOW_SOFTWARE=1
 export WLR_LIBINPUT_NO_DEVICES=1

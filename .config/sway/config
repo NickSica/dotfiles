@@ -21,8 +21,8 @@ set $menu dmenu_run
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-# output * bg /home/nick/wallhaven-469101.jpg fill
-#
+output * bg /home/nick/greenlantern_bg.jpg fit
+
 # Example configuration:
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
@@ -52,7 +52,7 @@ output $headless resolution 1920x1080 scale 1
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 # Swayps control and caps lock
-input * xkb_options "ctrl:swapcaps"
+#input * xkb_options "ctrl:swapcaps"
 
 ### Key bindings
 #
@@ -211,7 +211,6 @@ bindsym $mod+r mode "resize"
 ##########################
 # Personal Customization #
 ##########################
-output * bg /home/nick/greenlantern_bg.jpg fit
 
 ### Doesn't work for some reason
 # gaps inner 28
@@ -249,6 +248,6 @@ bar {
 
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
 
-include /etc/sway/config.d/*
-#exec wayvnc 10.0.0.1 5901
+#include /etc/sway/config.d/*
+exec wayvnc 0.0.0.0 5901
 #exec wayvnc -u
