@@ -11,7 +11,7 @@ The .pip_packages are the packages I installed through python's pip.
    
 Compositor- Wayland   
 Windows Manager- Sway   
-Terminal- Termite   
+Terminal- Alacritty   
 Shell- Zsh   
 Text Editor- Emacs   
    
