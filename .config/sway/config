@@ -116,10 +116,10 @@ output $headless resolution 1920x1080 scale 1
 	set $ws4 "4:web"
 	set $ws5 "5:music"
 	set $ws6 "6:docs"
-	set $ws7 "urgent"
-	set $ws8 "focused"
-	set $ws9 "default"
-	set $ws10 "default"
+	set $ws7 "7:urgent"
+	set $ws8 "8:focused"
+	set $ws9 "9:default"
+	#set $ws10 "default"
     # switch to workspace
     bindsym $mod+1 workspace $ws1
     bindsym $mod+2 workspace $ws2
@@ -130,7 +130,7 @@ output $headless resolution 1920x1080 scale 1
     bindsym $mod+7 workspace $ws7
     bindsym $mod+8 workspace $ws8
     bindsym $mod+9 workspace $ws9
-    bindsym $mod+0 workspace $ws10
+    #bindsym $mod+0 workspace $ws10
     # move focused container to workspace
     bindsym $mod+Shift+1 move container to workspace $ws1
     bindsym $mod+Shift+2 move container to workspace $ws2
@@ -141,7 +141,7 @@ output $headless resolution 1920x1080 scale 1
     bindsym $mod+Shift+7 move container to workspace $ws7
     bindsym $mod+Shift+8 move container to workspace $ws8
     bindsym $mod+Shift+9 move container to workspace $ws9
-    bindsym $mod+Shift+0 move container to workspace $ws10
+    #bindsym $mod+Shift+0 move container to workspace $ws10
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
 #
@@ -215,8 +215,8 @@ bindsym $mod+r mode "resize"
 ### Doesn't work for some reason
 # gaps inner 28
 # gaps outer 0
-gaps inner 8
-gaps outer 2
+gaps outer 8
+gaps inner 2
 
 default_border none
 default_floating_border none
@@ -225,29 +225,12 @@ default_floating_border none
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-bar {
-	swaybar_command waybar
-}
 #bar {
-#	font "CaskaydiaCoveNerdFont"
-#	position top
-	#status_command i3status
-#	status_command ~/.config/sway/swaybar.sh
-
-#	colors {
-#		statusline #78da59
-#		background #332f2e
-#		separator #fff32e
-		                   #border #bg     #txt
-#		focused_workspace  #332f2e #332f2e #ffba08
-#		inactive_workspace #332f2e #332f2e #cde4e6
-#		active_workspace   #777f8b #777f8b #cde4e6
-#		urgent_workspace   #dedfe3 #dedfe3 #767e8a
-#	}
+#	swaybar_command bash ~/.config/eww/start_eww.sh
 #}
+exec ~/.config/eww/start_eww.sh
 
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
 
 #include /etc/sway/config.d/*
 exec wayvnc 0.0.0.0 5901
-#exec wayvnc -u

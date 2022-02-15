@@ -1,0 +1,218 @@
+(defwindow bar
+    :monitor 0
+    :windowtype "dock"
+    :exclusive "true"
+	  :geometry (geometry :x "0%"
+                        :y "0%"
+                        :width "98%"
+                        :anchor "top center")
+    :reserve (struts :side "top" :distance "4%")
+	  (bar))
+
+(defwidget bar []
+  (centerbox :class "bar"
+             :orientation "h"
+             (box :orientation "h"
+                  :space-evenly false
+                  (workspaces))
+             (box :orientation "h"
+                  :space-evenly false
+                  (music))
+             (sidestuff)))
+
+(deflisten workspace "scripts/get_workspace.sh")
+
+(defwidget workspaces []
+  (literal :content workspace))
+;(defwidget workspaces []
+;  (box :class "workspaces"
+;       :orientation "h"
+;       :space-evenly true
+;       :halign "start"
+;       :spacing 15
+;       (button :class "1"  :onclick "sway workspace 1:term"  (label :text ""))
+;       (button :class "2:code"  :onclick "sway workspace 2:code"  (label :text ""))
+;       (button :class "3:work"  :onclick "sway workspace 3:work"  (label :text ""))
+;       (button :class "4:web"   :onclick "sway workspace 4:web"   (label :text ""))
+;       (button :class "5:music" :onclick "sway workspace 5:music" (label :text ""))
+;       (button :class "6:docs"  :onclick "sway workspace 6:docs"  (label :text ""))
+;       (button :class "7:urg"   :onclick "sway workspace urgent"  (label :text ""))
+;       (button :class "8:foc"   :onclick "sway workspace focused" (label :text ""))
+;       (button :class "9:def"   :onclick "sway workspace default" (label :text "")))
+
+(defwidget sidestuff []
+  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+    ;(metric :label "vol"
+    ;        :value volume
+    ;        :onchange "amixer -D pulse sset Master {}%")
+       (metric :label "disk"
+               :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
+               :onchange "")
+       (metric :label "ram"
+               :value {EWW_RAM.used_mem_perc}
+               :onchange "")
+       (metric :label "cpu"
+               :value {EWW_CPU.avg}
+               :onchange "")
+       time))
+
+(defwidget music []
+  (box :class "music"
+       :orientation "h"
+       :space-evenly false
+       :halign "center"
+    {music != "" ? "?${music}" : ""}))
+
+(deflisten music :initial ""
+  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' || true")
+
+;(defwidget volume []
+;  (box :orientation "v" :space-evenly "false" :class "main-box"
+;       (box :orientation "h" :class "slider-vol-side" :space-evenly "false"
+;            (box :class "label-vol-side" "")
+;            (scale :min 0 :max 101 :value {volume} :onchange "amixer -D pulse sset Master {}%"))
+;       (box :orientation "h" :class "slider-mic-side" :space-evenly "false"
+;            (box :class "label-mic-side" "")
+;            (scale :min 0 :max 101 :value {mic} :onchange "amixer -D pulse set Capture {}%"))))
+;
+;(defpoll volume :interval "1s"
+;  "amixer -D pulse sget Master | grep 'Left:' | awk -F'[][]' '{ print $2 }' | tr -d '%' | head -1")
+
+(defpoll time :interval "10s"
+  "date '+%H:%M %b %d, %Y'")
+
+(defwidget metric [label value onchange]
+  (box :orientation "h"
+       :class "metric"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :value value
+           :onchange onchange)))
+
+
+;(defwidget poweroff []
+;  (button :onclick "systemctl poweroff"
+;          (box :orientation "v" :space-evenly "false" :class "square-button"
+;               (box :class "poweroff" ""))))
+;
+;(defwidget reboot []
+;  (button :onclick "systemctl reboot"
+;          (box :orientation "v" :space-evenly "false" :class "square-button"
+;               (box :class "reboot" ""))))
+;
+;(defwidget logout []
+;  (button :onclick "bspc quit"
+;          (box :orientation "v" :space-evenly "false" :class "square-button"
+;               (box :class "logout" ""))))
+;
+;(defwidget lock []
+;  (button :onclick "lock"
+;          (box :orientation "v" :space-evenly "false" :class "square-button"
+;               (box :class "lock" "")
+;               )))
+;
+;(defwidget music []
+;  (box :orientation "h" :space-evenly "false" :class "music-box"
+;       (button :onclick "urxvt -name 'music_player' -e ncmpcpp_art"
+;               (image :path {album} :image-width 100 :image-height 100 :class "music-album")
+;               )
+;       (box :orientation "v" :space-evenly "false" :class ""
+;            (box :orientation "height" :space-evenly "false" :class ""
+;                 (label :text {song} :class "music-info" :limit-width 20)
+;                 )
+;            (box :orientation "h" :space-evenly "false" :class "music-control-box"
+;                 (button :onclick "mpc prev"
+;                         (label :text "玲" :class "music-control" :limit-width 24)
+;                         )
+;                 (button :onclick "mpc toggle"
+;                         (label :text {mcontrol} :class "music-control" :limit-width 24)
+;                         )
+;                 (button :onclick "mpc next"
+;                         (label :text "怜" :class "music-control" :limit-width 24)
+;                         )
+;                 )
+;            )
+;       ))
+;
+;(defwidget profile []
+;  (box :orientation "v" :space-evenly "false" :class "profile-box"
+;       (image :path "images/profile.png" :image-width 120 :image-height 120 :class "profile-picture")
+;       (box :orientation "v" :space-evenly "false" :class "profile-info"
+;            (label :text "Edoardo Zerbo" :class "profile-name" :limit-width 20)
+;            (label :text "@nautilor" :class "profile-username" :limit-width 20)
+;            )
+;       )
+;  )
+;
+;(defwidget time []
+;  (box :orientation "v" :space-evenly "false" :class "hour-box"
+;       (label :text {hour} :class "hour-text" :limit-width 20)
+;       (label :text {minute} :class "minute-text" :limit-width 20)
+;       )
+;  )
+;
+;(defwidget date []
+;  (box :orientation "v" :space-evenly "false" :class "date-box"
+;       (label :text {date} :class "date-text" :limit-width 20)
+;       )
+;  )
+;
+;
+;                                        ; vars
+;(defpoll volume :interval "0ms"  "bar volume | sed 's/%//g' | xargs")
+;(defpoll mic :interval "0ms"  "bar mic")
+;(defpoll song :interval "10ms"  "bar mpd")
+;(defpoll mcontrol :interval "10ms"  "bar music_control_eww")
+;(defpoll album :interval "1s"  "spotiart")
+;(defpoll hour :interval "1s"  "date '+%H'")
+;(defpoll minute :interval "1s"  "date '+%M'")
+;(defpoll date :interval "1s"  "date '+%d/%m/%Y'")
+;
+;(defwindow volume
+;	:monitor 0
+;	:geometry (geometry :x "1495px" :y "50px" :width "250px" :height "50px")
+;	(volume))
+;
+;(defwindow poweroff
+;	:monitor 0
+;	:geometry (geometry :x "1785px" :y "50px" :width "50px" :height "50px")
+;	(poweroff))
+;
+;
+;(defwindow reboot
+;    :monitor 0
+;	:geometry (geometry :x "1785px" :y "115px" :width "50px" :height "50px")
+;	(reboot))
+;
+;(defwindow logout
+;    :monitor 0
+;	:geometry (geometry :x "1855px" :y "50px" :width "50px" :height "50px")
+;	(logout))
+;
+;(defwindow lock
+;    :monitor 0
+;	:geometry (geometry :x "1855px" :y "115px" :width "50px" :height "50px")
+;	(lock))
+;
+;(defwindow music
+;    :monitor 0
+;	:geometry (geometry :x "1495px" :y "185px" :width "420px" :height "100px")
+;	(music))
+;
+;(defwindow profile
+;    :monitor 0
+;	:geometry (geometry :x "1495px" :y "320px" :width "210px" :height "120px")
+;	(profile))
+
+;(defwindow time
+;    :monitor 0
+;	:geometry (geometry :x "1725px" :y "320px" :width "190px" :height "120px")
+;	(time))
+
+;(defwindow date
+;    :monitor 0
+;	:geometry (geometry :x "1725px" :y "485px" :width "190px" :height "86px")
+;	(date))
