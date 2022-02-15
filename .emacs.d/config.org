@@ -4,6 +4,7 @@
 * Initial Configuration
 ** Fix Native Comp Issues
 #+begin_src emacs-lisp
+  (setq gc-cons-threshold 100000000)
   (setq native-comp-async-report-warnings-errors nil)
 #+end_src
 
@@ -22,17 +23,15 @@
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 
-
   ;; Use straight.el for setup
   (straight-use-package 'use-package)
 #+END_SRC
 
 ** Bootstrap 'use-package'
 #+begin_src emacs-lisp
-(use-package straight
-:custom (straight-use-package-by-default t)
-
-  (setq straight-base-dir "~/.emacs.d/cache/straight/"))
+  (use-package straight
+    :custom (straight-use-package-by-default t)
+    (setq straight-base-dir "~/.emacs.d/cache/straight/"))
 #+end_src
 
 ** Don't Litter
@@ -75,14 +74,14 @@
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
   (use-package evil
-  :init
+    :init
     (setq evil-respect-visual-line-mode t)
     (setq evil-want-C-u-scroll t)
     (setq evil-want-C-i-jump nil)
     (setq evil-want-fine-undo t)
     (setq evil-undo-system 'undo-tree)
     (setq evil-search-module 'evil-search)
-  :config
+    :config
     (evil-mode 1)
 
     (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
@@ -93,17 +92,17 @@
     (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
 
   (use-package evil-numbers
-  :config
+    :config
     (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt))
 
   (use-package evil-collection
     :after evil
-  :init
+    :init
     (setq evil-collection-company-use-tng nil)
-  :custom
+    :custom
     ;; Is this a bug in evil-collection?
     (setq evil-collection-bind-tab-p nil)
-       :config
+    :config
     (evil-collection-init))
 
   ;; Treat '_' as a word character
@@ -181,61 +180,60 @@
 
 * Advanced UI Config
 ** Dashboard
-   #+begin_src emacs-lisp
-     (use-package dashboard
-       :config
-       ;; for daemon
-       (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-       (dashboard-setup-startup-hook))
-   #+end_src
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :config
+    ;; for daemon
+    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    (dashboard-setup-startup-hook))
+#+end_src
 ** Centaur Tabs
-   #+begin_src emacs-lisp
-     (use-package centaur-tabs
-       :config
-       (centaur-tabs-mode t)
-       (centaur-tabs-headline-match)
-       (setq centaur-tabs-style "bar")
-       (setq centaur-tabs-set-bar 'under)
-       ;; To get underline to display correctly on non-spacemacs
-       (setq x-underline-at-descent-line t)
-       (setq centaur-tabs-set-icons t)
-       (setq centaur-tabs-gray-out-icons t)
-  (sica/leader-key-def
-         "cp" 'centaur-tabs-backward
-         "cn" 'centaur-tabs-forward))
-   #+end_src
+#+begin_src emacs-lisp
+  (use-package centaur-tabs
+    :config
+    (centaur-tabs-mode t)
+    (centaur-tabs-headline-match)
+    (setq centaur-tabs-style "bar")
+    (setq centaur-tabs-set-bar 'under)
+    ;; To get underline to display correctly on non-spacemacs
+    (setq x-underline-at-descent-line t)
+    (setq centaur-tabs-set-icons t)
+    (setq centaur-tabs-gray-out-icons t)
+    (sica/leader-key-def
+      "cp" 'centaur-tabs-backward
+      "cn" 'centaur-tabs-forward))
+#+end_src
 ** Parentheses
 *** Show Matching
-    #+begin_src emacs-lisp
-    (setq show-paren-delay 0)
-    (show-paren-mode 1)
-    #+end_src
+#+begin_src emacs-lisp
+(setq show-paren-delay 0)
+(show-paren-mode 1)
+#+end_src
 *** Smartparens
-    #+begin_src emacs-lisp
-      (use-package smartparens
-        :config
-        (require 'smartparens-config)
-        (smartparens-strict-mode t)
-        (smartparens-global-mode t)
-        (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-        (sp-local-pair 'org-mode "[" nil :actions nil)
-        (sp-local-pair 'verilog-mode "'" nil :actions nil))
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :config
+    (require 'smartparens-config)
+    (smartparens-strict-mode t)
+    (smartparens-global-mode t)
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (sp-local-pair 'org-mode "[" nil :actions nil)
+    (sp-local-pair 'verilog-mode "'" nil :actions nil))
     #+end_src
 *** Rainbow Delimiters
-    #+begin_src emacs-lisp
-    (use-package rainbow-delimiters
-      :hook (prog-mode . rainbow-delimiters-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
 ** Dired
 #+begin_src emacs-lisp
   (use-package all-the-icons-dired)
   (use-package dired-single)
   (use-package dired-ranger)
   (use-package dired-collapse)
-
   (use-package dired
-  :straight nil
-  :config
+    :straight nil
+    :config
     (setq dired-listing-switches "-agho --group-directories-first"
           dired-omit-files "^\\.[^.].*"
           dired-omit-verbose nil
@@ -293,24 +291,24 @@
 #+end_src
 
 ** Treemacs
-   #+begin_src emacs-lisp
-     (use-package treemacs
-       :defer t)
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :defer t)
 
-     (use-package treemacs-evil
-     :after treemacs evil)
+  (use-package treemacs-evil
+    :after treemacs evil)
 
-     (use-package treemacs-projectile
-     :after treemacs projectile)
+  (use-package treemacs-projectile
+    :after treemacs projectile)
 
-     (use-package treemacs-icons-dired
-     :after treemacs dired
-       :config
-       (treemacs-icons-dired-mode))
+  (use-package treemacs-icons-dired
+    :after treemacs dired
+    :config
+    (treemacs-icons-dired-mode))
 
-     (use-package treemacs-magit
-     :after treemacs magit)
-   #+end_src
+  (use-package treemacs-magit
+    :after treemacs magit)
+#+end_src
 ** Theme
    #+begin_src emacs-lisp
    ;; All The Icons
@@ -385,9 +383,9 @@
 * Vertico/Consult
   #+begin_src emacs-lisp
     (use-package savehist
-    :init
-    (savehist-mode)
-    :custom
+      :init
+      (savehist-mode)
+      :custom
       (setq history-length 25))
 
     (defun sica/minibuffer-backward-kill (arg)
@@ -403,58 +401,35 @@
     ;; Completion menu
     (use-package vertico
       :bind (:map vertico-map
-        ("C-j" . vertico-next)
-        ("C-k" . vertico-previous)
-        ("C-f" . vertico-exit)
-        :map minibuffer-local-map
-        ("M-h" . backward-kill-word)
-        ("<Backspace>" . sica/minibuffer-backward-kill))
+                  ("C-j" . vertico-next)
+                  ("C-k" . vertico-previous)
+                  ("C-f" . vertico-exit)
+                  :map minibuffer-local-map
+                  ("M-h" . backward-kill-word)
+                  ("<Backspace>" . sica/minibuffer-backward-kill))
       :custom
       (custom-set-faces '(vertico-current ((t (:background "#3a3f5a")))))
       (vertico-cycle t)
       :init
       (vertico-mode))
 
-    ;; Completion in region
-    (use-package corfu
-    :straight (:host github :repo "minad/corfu")
-      :bind (:map corfu-map
-        ("C-j" . corfu-next)
-        ("C-k" . corfu-previous)
-        ("TAB" . corfu-insert)
-        ("C-f" . corfu-insert))
-      :custom
-      (setq corfu-cycle t)
-      :init
-      (corfu-global-mode))
-
-    (setq tab-always-indent 'complete)
-    (setq c-tab-always-indent 'complete)
-
-    ;; Improved candidate filtering
-    (use-package orderless
-    :custom
-      (setq completion-styles '(orderless)
-            completion-category-defaults nil
-            completion-category-overrides '((file (styles . (partial-completion))))))
-
     ;; Provides useful completion commands
     (use-package consult
-    :custom
+      :custom
       (autoload 'projectile-project-root "projectile")
       (setq consult-project-root-function #'projectile-project-root)
 
       (setq completion-in-region-function #'consult-completion-in-region)
 
       :bind (("C-s" . consult-line)
-        ("C-M-l" . consult-imenu)
-        ("C-M-j" . persp-switch-to-buffer*)
+             ("C-M-l" . consult-imenu)
+             ("C-M-j" . persp-switch-to-buffer*)
 
-      :map minibuffer-local-map
-        ("C-r" . consult-history)))
+             :map minibuffer-local-map
+             ("C-r" . consult-history)))
 
     (use-package marginalia
-    :after vertico
+      :after vertico
       :custom
       (setq
        marginalia-annotators '(marginalia-annotators-heavy
@@ -462,6 +437,52 @@
                                nil))
       :init
       (marginalia-mode))
+
+    (use-package consult-lsp
+      :after consult)
+
+    (use-package cape)
+
+    ;; Completion in region
+    (use-package corfu
+      :straight (:host github :repo "minad/corfu")
+      :bind (:map corfu-map
+                  ("C-j" . corfu-next)
+                  ("C-k" . corfu-previous)
+                  ("TAB" . corfu-next)
+                  ("S-TAB" . previous)
+                  ("C-f" . corfu-insert))
+      :custom
+      (corfu-cycle t)
+      (corfu-preselect-first nil)
+      :init
+      (corfu-global-mode))
+
+    (setq tab-always-indent 'complete)
+    (setq c-tab-always-indent 'complete)
+
+    (use-package yasnippet
+      :ensure
+      :config
+      (yas-reload-all)
+      (add-hook 'prog-mode-hook 'yas-minor-mode)
+      (add-hook 'text-mode-hook 'yas-minor-mode))
+
+    ;; Improved candidate filtering
+    (use-package orderless
+      :init
+      (setq completion-styles '(orderless partial-completion)
+            completion-category-defaults nil
+            completion-category-overrides '((file (styles . (partial-completion))))))
+      ;; Hide commands in M-x which don't apply to the current mode
+      ;(setq read-extended-command-predicate #'command-completion-default-include-p))
+
+    (use-package kind-icon
+      :after corfu
+      :custom
+      (kind-icon-default-face 'corfu-default)
+      :config
+      (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+end_src
 
 * Helpful Configuration
@@ -625,10 +646,20 @@
 
   ;;(use-package prog-major-mode
   ;;  :hook (progr-major-mode . dtrt-indent-mode))
+  (defun sica/lsp-compl-mode-setup ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+    ;(setq-local completion-at-point-functions (list (cape-capf-buster
+    ;                                                 #'lsp-completion-at-point))))
+    ;(add-to-list 'completion-at-point-functions #'cape-capf-buster)
+    ;(add-to-list 'completion-at-point-functions #'cape-file)
+    ;(add-to-list 'completion-at-point-functions #'cape-tex)
+    ;(add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    ;(add-to-list 'completion-at-point-functions #'cape-keyword))
 
   (use-package lsp-mode
-    :hook ((rustic-mode . lsp-deferred)
-           (lsp-completion-mode . sica/lsp-compl-mode-setup)
+    :commands lsp
+    :hook ((lsp-completion-mode . sica/lsp-compl-mode-setup)
            (prog-major-mode . lsp-prog-major-mode-enable)
            (vhdl-mode . lsp-deferred)
            (verilog-mode . lsp-deferred)
@@ -639,15 +670,16 @@
            (latex-mode . lsp-deferred)
            (python-mode . lsp-deferred)
            (lsp-mode . lsp-enable-which-key-integration)
-           (rustic-mode . lsp-deferred)
            (go-mode . lsp-deferred)
-           (rustic-mode . lsp-deferred)
            (rustic-mode . lsp-deferred))
-    :bind
-    ("TAB" . tab-to-tab-stop)
-    ("M-TAB" . indent-for-tab-command)
-
-    :custom
+    :bind (:map evil-insert-state-map
+                ("TAB" . indent-for-tab-command)
+                ("M-TAB" . tab-to-tab-stop)
+                ;("TAB" . tab-to-tab-stop)
+                ;("M-TAB" . indent-for-tab-command)
+                :map evil-normal-state-map
+                ("TAB" . indent-for-tab-command))
+    :init
     (sica/leader-key-def
       "l" '(:ignore t :which-key "lsp")
       "ld" 'xref-find-definitions
@@ -663,46 +695,57 @@
     ;;("C-c C-c r" . lsp-rename)
     ;;("C-c C-c q" . lsp-workspace-restart)
     ;;("C-c C-c Q" . lsp-workspace-shutdown)
-
-
-(setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols)
-             lsp-clangd-binary-path "/usr/bin/clangd")
-
-    (setq lsp-file-watch-threshold 1500)
-    (setq lsp-enable-which-key-integration t)
-    (setq lsp-enable-on-type-formatting nil)
-    (setq lsp-enable-indentation nil)
-    (setq gc-cons-threshold 100000000)
-    (setq read-process-output-max (* 1024 1024))
-    (setq lsp-eldoc-render-all t
-             lsp-idle-delay 0.6))
+    :custom
+    (lsp-use-plists t)
+    (lsp-rust-analyzer-cargo-watch-command "clippy")
+    (lsp-rust-analyzer-server-display-inlay-hints t)
+    (lsp-completion-provider :none)
+    (lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-clangd-binary-path "/usr/bin/clangd")
+    (lsp-file-watch-threshold 1500)
+    (lsp-enable-which-key-integration t)
+    (lsp-enable-on-type-formatting nil)
+    (lsp-enable-indentation nil)
+    (read-process-output-max (* 1024 1024))
+    (lsp-eldoc-render-all t)
+    (lsp-idle-delay 0.6))
 
   (use-package lsp-ui
     :after lsp-mode
-    :hook lsp-mode
-    :config
+    :commands lsp-ui-mode
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
     (setq lsp-ui-sideline-enable t)
     (setq lsp-ui-sideline-show-hover nil)
-    :custom
     (setq lsp-ui-doc-position 'bottom)
     (lsp-ui-doc-show))
 
   (use-package lsp-treemacs
-    :after lsp-mode
-    :hook lsp-mode)
+    :after (lsp-mode treemacs)
+    :config
+    (lsp-treemacs-sync-mode 1))
 
   (use-package dap-mode
     :after lsp-mode
+    :custom
+    (dap-auto-configure-features '(sessions locals controls tooltip))
     :config
-    (dap-auto-configure-mode))
+    (dap-mode 1)
+    (dap-ui-mode 1)
+    (dap-tooltip-mode 1)
+    (tooltip-mode 1)
+    (dap-ui-controls-mode 1))
 #+end_src
 
 ** Tree-Sitter
 #+begin_src emacs-lisp
-  (use-package tree-sitter)
-  (use-package tree-sitter-langs)
+  (use-package tree-sitter
+    :after flycheck-mode
+    :config
+    (global-tree-sitter-mode))
+  (use-package tree-sitter-langs
+    :after tree-sitter)
 
-  (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 #+end_src
 
@@ -751,9 +794,14 @@
 
 ** Emacs Lisp
 #+begin_src emacs-lisp
+  (defun sica/elisp-hook()
+    (setq tab-width 2))
+
   (use-package emacs-lisp-mode
-  :straight nil
-    :hook (emacs-lisp-mode . flycheck-mode))
+    :after flycheck-mode
+    :straight nil
+    :hook ((emacs-lisp-mode . flycheck-mode)
+           (emacs-lisp-mode . sica/elisp-hook)))
 
   (sica/leader-key-def
     "e"   '(:ignore t :which-key "emacs")
@@ -796,16 +844,24 @@
     :hook (rustic-mode . sica/rustic-mode-hook)
     ;; comment to disable rustfmt on save
     :config
-    (setq rustic-format-on-save t
-          rustic-format-on-save-method 'rustic-format-buffer
-          lsp-rust-analyzer-cargo-watch-command "clippy"
-          lsp-rust-analyzer-server-display-inlay-hints t
-          rustic-rustfmt-bin "/usr/bin/rustfmt"))
+    (require 'dap-gdb-lldb)
+    (setq rustic-format-on-save t)
+    (setq rustic-format-on-save-method 'rustic-format-buffer)
+    (setq rustic-rustfmt-bin "/usr/bin/rustfmt")
+    (dap-register-debug-template "Rust::GDB Run Configuration"
+                                 (list :type "gdb"
+                                       :request "launch"
+                                       :name "GDB::Run"
+                                       :gdbpath "rust-gdb"
+                                       :target nil
+                                       :cwd nil)))
 #+end_src
 
 ** Go
 #+begin_src emacs-lisp
-  (use-package go-mode)
+  (use-package go-mode
+    :config
+    (require 'dap-go))
 #+end_src
 
 ** C/C++
@@ -824,29 +880,37 @@
   (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.c\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-mode))
+
   (use-package c-mode
-  :straight nil
+    :straight nil
     :hook (c-mode . sica/c-mode-hook)
     :bind (:map c-mode-map
-                ("DEL" . evil-delete-backward-char-and-join)))
+                ("DEL" . evil-delete-backward-char-and-join))
+    :config
+    (require 'dap-lldb))
+
 
   (use-package c++-mode
-  :straight nil
-    :hook (c++-mode . sica/c-mode-hook))
-
-  ;;(define-key c-mode-base-map (kbd "TAB") 'tab-to-tab-stop)
+    :straight nil
+    :hook (c++-mode . sica/c-mode-hook)
+    :config
+    (require 'dap-cpptools))
+    ;;(define-key c-mode-base-map (kbd "TAB") 'tab-to-tab-stop)
 #+end_src
 
 ** Python
 #+begin_src emacs-lisp
-  (use-package python-mode)
+  (use-package python-mode
+    :config
+    (require 'dap-python))
 #+end_src
 
 ** Java
 #+begin_src emacs-lisp
-  (use-package lsp-java)
-
-  ;;(use-package dap-java)
+  (use-package lsp-java
+    :config
+    (require 'dap-java))
 #+end_src
 
 ** Javascript/Typescript
@@ -915,7 +979,7 @@
   :safe 'stringp)
 
   (use-package tex
-  :straight auctex
+    :straight auctex
     :init
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
@@ -931,6 +995,7 @@
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
     (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode))
 #+end_src
+
 * Ligatures
 #+begin_src emacs-lisp
   (use-package ligature
