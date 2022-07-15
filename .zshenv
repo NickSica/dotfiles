@@ -20,6 +20,7 @@ alias e='emacsclient -nc'
 alias vim='nvim'
 alias v='nvim'
 alias wvnc='WAYLAND_DISPLAY=wayland-1 wayvnc 0.0.0.0 5901'
+alias wpipe='waypipe ssh -X nick@nisicalab.com'
 
 # Needed for Virtuoso
 alias arch="uname -m"
