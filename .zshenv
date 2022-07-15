@@ -4,9 +4,8 @@ TEMP_PATH=$PATH
 unset PATH
 source /opt/Xilinx/Vivado/2020.2/settings64.sh
 
-export PATH=~/CS370/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:/opt/intelFPGA_pro/21.1/modelsim_ase/bin:~/.cargo/bin:$TEMP_PATH:$PATH
+export PATH=~/CS370/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:/opt/intelFPGA_pro/21.4/questa_fse/bin:~/.cargo/bin:$TEMP_PATH:$PATH
 #/opt/symbiotic_20200206A/bin
-export TERM=alacritty
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 ### For Vivado (and other Java GUIs) to run on Wayland
@@ -22,15 +21,20 @@ alias vim='nvim'
 alias v='nvim'
 alias wvnc='WAYLAND_DISPLAY=wayland-1 wayvnc 0.0.0.0 5901'
 
+# Needed for Virtuoso
+alias arch="uname -m"
+
 ### Stop vivado throwing logs everywhere
 alias vivado="vivado -nolog -nojournal"
 
 ### TODO if need be: Setup for FPGA aliases
+export LM_LICENSE_FILE="/opt/intelFPGA_pro/intel_questa_license.dat"
 
 ### Symbiotic EDA
 export SYMBIOTIC_LICENSE="$HOME/symbiotic_academic_license.lic"
 
 ### Sway environment setup
+export GDK_BACKEND=wayland
 # This forces Intel in a multi-GPU setup
 export WLR_DRM_DEVICES=/dev/dri/card0
 export WLR_RENDER_DRM_DEVICE=/dev/dri/renderD128
