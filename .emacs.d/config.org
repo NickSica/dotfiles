@@ -167,7 +167,7 @@
 #+end_src
 **** Always use tabs for indentation
 #+begin_src emacs-lisp
-  (setq-default indent-tabs-mode nil)
+  (setq-default indent-tabs-mode t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
   ;;(global-whitespace-mode 1)
 #+end_src
@@ -319,7 +319,7 @@
    (setq doom-themes-enable-italic t
      doom-themes-enable-bold t)
    :config
-     (load-theme 'doom-city-lights t)
+     (load-theme 'doom-wilmersdorf t)
      (doom-themes-neotree-config)
      (doom-themes-org-config))
    #+end_src
@@ -669,6 +669,7 @@
            (java-mode . lsp-deferred)
            (latex-mode . lsp-deferred)
            (python-mode . lsp-deferred)
+           (web-mode . lsp-deferred)
            (lsp-mode . lsp-enable-which-key-integration)
            (go-mode . lsp-deferred)
            (rustic-mode . lsp-deferred))
@@ -951,6 +952,26 @@
     (setq typescript-indent-level 2)
     (setq vue-indent-level 2))
 
+#+end_src
+
+** HTML/CSS
+#+begin_src emacs-lisp
+	(use-package emmet-mode)
+	(use-package web-mode)
+
+	(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+	(add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+	(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+	(add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
+	(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+
+	(defun sica/web-mode-hook ()
+		(setq web-mode-markup-indent-offset 2)
+		(setq web-mode-css-indent-offset 2)
+		(setq web-mode-code-indent-offset 2)
+	)
+
+	(add-hook 'web-mode-hook #'sica/web-mode-hook)
 #+end_src
 
 ** Haskell
