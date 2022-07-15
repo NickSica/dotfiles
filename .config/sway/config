@@ -228,7 +228,8 @@ default_floating_border none
 #bar {
 #	swaybar_command bash ~/.config/eww/start_eww.sh
 #}
-exec ~/.config/eww/start_eww.sh
+exec eww open bar
+#exec ~/.config/eww/start_eww.sh
 
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
 
