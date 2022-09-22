@@ -167,7 +167,7 @@
 #+end_src
 **** Always use tabs for indentation
 #+begin_src emacs-lisp
-  (setq-default indent-tabs-mode t)
+  (setq-default indent-tabs-mode nil)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
   ;;(global-whitespace-mode 1)
 #+end_src
@@ -969,6 +969,7 @@
 		(setq web-mode-markup-indent-offset 2)
 		(setq web-mode-css-indent-offset 2)
 		(setq web-mode-code-indent-offset 2)
+		(setq-local indent-tabs-mode nil)
 	)
 
 	(add-hook 'web-mode-hook #'sica/web-mode-hook)
