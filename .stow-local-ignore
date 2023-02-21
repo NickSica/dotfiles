@@ -1,0 +1,4 @@
+\.git
+LICENSE
+#^/.*\.org
+README.md
