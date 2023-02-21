@@ -309,6 +309,7 @@
   (use-package treemacs-magit
     :after treemacs magit)
 #+end_src
+
 ** Theme
    #+begin_src emacs-lisp
    ;; All The Icons
@@ -319,7 +320,8 @@
    (setq doom-themes-enable-italic t
      doom-themes-enable-bold t)
    :config
-     (load-theme 'doom-wilmersdorf t)
+     (load-theme 'doom-city-lights t)
+     ;;(load-theme 'doom-badger t)
      (doom-themes-neotree-config)
      (doom-themes-org-config))
    #+end_src
@@ -502,7 +504,6 @@
       "Enhance UI for orgmode."
       (org-bullets-mode 1)
       (org-autolist-mode 1)
-      (linum-mode nil)
       (setq tab-width 2)
       (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
         (set-face-attribute (car face) nil
@@ -627,6 +628,10 @@
   (setq next-line-add-newlines t)
   (define-key global-map (kbd "RET") 'newline-and-indent)
   (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
+  (add-hook 'prog-mode-hook
+            (lambda () (
+                        (modify-syntax-entry ?_ "w")
+                        (modify-syntax-entry ?- "w"))))
 
   (sica/leader-key-def
     "i" '(:ignore t :which-key "indent")
@@ -839,6 +844,7 @@
     (when buffer-file-name
       (setq-local buffer-save-without-query t))
     (setq tab-width 4)
+    (setq c-basic-offset 4)
     (setq indent-tabs-mode nil))
 
   (use-package rustic
