@@ -14,6 +14,7 @@ export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 
 ### General aliases
 alias qute="qutebrowser &"
+alias stow_dots="bash ~/dotfiles/stow_dots.sh"
 alias ls='ls --color=auto'
 alias l='ls -Fal'
 alias e='emacsclient -nc'
