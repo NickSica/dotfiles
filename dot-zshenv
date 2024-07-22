@@ -1,16 +1,15 @@
+#!/bin/bash
 export LFS=/mnt/lfs
 
 TEMP_PATH=$PATH
 unset PATH
 source /opt/Xilinx/Vivado/2020.2/settings64.sh
 
-export PATH=~/CS370/Linux/386/bin:/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:/opt/intelFPGA_pro/21.4/questa_fse/bin:~/.cargo/bin:$TEMP_PATH:$PATH
+export PATH=/usr/bin/git:~/.local/bin:~/.stack/programs/x86_64-linux/ghc-tinfo6-8.0.2/bin:/opt/intelFPGA_pro/21.4/questa_fse/bin:~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin:~/.cargo/bin:$TEMP_PATH:$PATH
+
 #/opt/symbiotic_20200206A/bin
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
 
-### For Vivado (and other Java GUIs) to run on Wayland
-export _JAVA_AWT_WM_NONREPARENTING=1
-export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 
 ### General aliases
 alias qute="qutebrowser &"
@@ -35,14 +34,52 @@ export LM_LICENSE_FILE="/opt/intelFPGA_pro/intel_questa_license.dat"
 ### Symbiotic EDA
 export SYMBIOTIC_LICENSE="$HOME/symbiotic_academic_license.lic"
 
-### Sway environment setup
-export GDK_BACKEND=wayland
-# This forces Intel in a multi-GPU setup
-export WLR_DRM_DEVICES=/dev/dri/card0
-export WLR_RENDER_DRM_DEVICE=/dev/dri/renderD128
-#export WLR_RENDERER=vulkan
-# These are for headless
+###################### Wayland Setup
+### Sway/wlroots environment setup
+export WLR_RENDERER=vulkan
 export XDG_SESSION_TYPE=wayland
-export WLR_BACKENDS=headless
-#export WLR_RENDERER_ALLOW_SOFTWARE=1
-export WLR_LIBINPUT_NO_DEVICES=1
+
+### Force GTK to use wayland- might not be needed anymore
+export GDK_BACKEND=wayland
+
+### Force Qt to use wayland- might not be needed anymore
+export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+### Intel Variables
+# This forces Intel in a multi-GPU setup
+export WLR_DRM_DEVICES=/dev/dri/card1
+#export WLR_RENDER_DRM_DEVICE=/dev/dri/renderD128
+export VDPAU_DRIVE=i915
+export LIBVA_DRIVE_NAME=va_gl
+#unset __GLX_VENDOR_LIBRARY_NAME
+#unset GBM_BACKEND
+
+### Nvidia Variables
+#export WLR_DRM_DEVICES=/dev/dri/card0
+#export WLR_RENDER_DRM_DEVICE=/dev/dri/renderD128
+#export VDPAU_DRIVE=nvidia
+#export LIBVA_DRIVE_NAME=nvidia
+#export GBM_BACKEND=nvidia-drm
+#export __GLX_VENDOR_LIBRARY_NAME=nvidia
+#export XWAYLAND_NO_GLAMOR=1
+# Disables GSYNC and Variable Refresh Rate
+#export __GL_GSYNC_ALLOWED=0
+#export __GL_VRR_ALLOWED=0
+
+### For Vivado (and other Java GUIs) to run on Wayland
+export _JAVA_AWT_WM_NONREPARENTING=1
+export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
+
+# These are for Sunshine with sway
+export XDG_SESSION_DESKTOP=sway
+export XDG_CURRENT_DESKTOP=sway
+export DESKTOP_SESSION=sway
+
+##### Uncomment for headless sway
+export WLR_BACKENDS="headless,libinput"
+
+##### These might be useless now?
+#export WLR_NO_HARDWARE_CURSORS=1
+#export WLR_BACKENDS="headless"
+

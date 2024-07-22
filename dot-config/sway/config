@@ -14,7 +14,8 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+#set $term alacritty
+set $term foot
 # Your preferred application launcher
 set $menu dmenu_run
 
@@ -147,8 +148,10 @@ output $headless resolution 1920x1080 scale 1
 #
 # Layout stuff:
 #
-	assign [class="emacs"] emacsclient -nc
-	assign [app_id="emacs"] workspace $ws2
+    # stm32-emulator stays floating
+    for_window [class="stm32-emulator"] floating enable
+    assign [class="emacs"] emacsclient -nc
+    assign [app_id="emacs"] workspace $ws2
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
@@ -164,10 +167,10 @@ output $headless resolution 1920x1080 scale 1
     bindsym $mod+f fullscreen
 
     # Toggle the current focus between tiling and floating mode
-    # bindsym $mod+Shift+space floating toggle
+    bindsym $mod+Shift+space floating toggle
 
     # Swap focus between the tiling area and the floating area
-    # bindsym $mod+space focus mode_toggle
+    bindsym $mod+space focus mode_toggle
 
     # move focus to the parent container
     bindsym $mod+a focus parent
@@ -211,15 +214,19 @@ bindsym $mod+r mode "resize"
 ##########################
 # Personal Customization #
 ##########################
-
-### Doesn't work for some reason
-# gaps inner 28
-# gaps outer 0
-gaps outer 8
-gaps inner 2
+smart_gaps off
+#gaps outer 8
+gaps inner 25
+gaps outer 0
 
 default_border none
 default_floating_border none
+
+### SwayFX Configuration
+blur enable
+blur_xray disable
+corner_radius 12
+shadows enable
 
 #
 # Status Bar:
@@ -228,10 +235,14 @@ default_floating_border none
 #bar {
 #	swaybar_command bash ~/.config/eww/start_eww.sh
 #}
-exec eww open bar
+bar {
+    swaybar_command waybar
+}
+
+#exec eww open bar
 #exec ~/.config/eww/start_eww.sh
 
 #exec "swayidle -w timeout 60 'swaylock -f -c 000000'"
 
-#include /etc/sway/config.d/*
-exec wayvnc 0.0.0.0 5901
+##include /etc/sway/config.d/*
+exec wayvnc --gpu 0.0.0.0 5901

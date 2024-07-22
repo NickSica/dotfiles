@@ -1,0 +1,120 @@
+/* From https://github.com/WavyEbuilder/.dotfiles */
+* {
+    color: #eceff4;
+    border: 0;
+    border-radius: 0;
+    padding: 0 0;
+    font-family:JetBrainsMonoNerdFont;
+    font-size: 15px;
+    margin-right: 2px;
+    margin-left: 2px;
+    padding-top:1px;
+    padding-bottom:1px;
+   }
+/*
+window#waybar {
+    background:rgba (0, 0, 0, 0.55);
+}
+*/
+
+window#waybar {
+	background-color: #13151d;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+#workspaces {
+
+}
+
+#workspaces, #workspaces button, #clock, #battery, #cpu, #memory, #disk, #backlight, #network, #pulseaudio, #window {
+    margin: 2px 2px 2px 2px;
+	padding: 2px 14px;
+}
+
+#workspaces button {
+  padding: 0 0px;
+  min-width: 20px;
+  color: #7aa2f7;
+}
+
+#workspaces button:hover {
+  background-color: rgba(0, 0, 0, 0.2)
+}
+
+#workspaces button.focused {
+  color: #c678dd;
+}
+
+#workspaces button.urgent {
+  color: #e06c75;
+}
+#clock {
+	color:#a3be8c;
+}
+
+#backlight {
+    color: #ebcb8b;
+}
+
+#battery {
+    color: #d8dee9;
+    padding-right: 22px;
+}
+
+#battery.charging {
+    color: #81a1c1;
+}
+
+@keyframes blink {
+    to {
+        color: #4c566a;
+        background-color: #eceff4;
+    }
+}
+
+#battery.critical:not(.charging) {
+    background: #bf616a;
+    color: #eceff4;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#cpu {
+    color:#8CBCBE;
+}
+
+#memory {
+    color: #d3869b;
+    padding-right: 20px;
+}
+#disk {
+    color: #BE8E8C;
+}
+#network.disabled {
+    color:#bf616a;
+}
+
+#network{
+    color:#a3be8c;
+}
+
+#network.disconnected {
+    color: #bf616a;
+}
+
+#pulseaudio {
+    color: #b48ead;
+}
+
+#pulseaudio.muted {
+    color: #3b4252;
+}
+
+#window{
+    border-style: hidden;
+    margin-top:1px;  
+}

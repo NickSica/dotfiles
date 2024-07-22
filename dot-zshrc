@@ -23,10 +23,12 @@ compinit
 source ~/.zshkeybinds
 
 # Theme and Plugins for zsh
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+source '/usr/share/zsh-antidote/antidote.zsh'
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins
+#source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 #source /usr/share/zsh-theme-powerlevel10k/p10k-lean.zsh
 #source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-hightlighting.plugin.zsh
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
+#source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 #source /usr/share/zsh/plugins/sudo.plugin.zsh
 
 # Run navi as shell widget

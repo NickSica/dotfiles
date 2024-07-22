@@ -3,49 +3,115 @@
   "mode": "dock", 				// Display mode (dock|hide|invisible|overlay)
   "exclusive": true, 				// Request an exclusive zone from the compositor
   "passthrough": false, 			// Pass any pointer events to the window under the bar
-  "position": "top", 			// Waybar position (top|bottom|left|right)
+  "position": "left", 			// Waybar position (top|bottom|left|right)
   "height": "", 					// Waybar height (to be removed for auto height)
   "width": "", 					// Waybar width (empty for auto width)
   "spacing": 0, 					// Gaps between modules
   "margin": 0, 					// Space around the bar
-  "margin-top": 5, 				// Space above the bar
-  "margin-bottom": 0, 			// Space below the bar
-  "margin-left": 5, 				// Space to the left of the bar
-  "margin-right": 5, 				// Space to the right of the bar
-  "fixed-center": true, 			// Center modules position
+  "margin-top": 15, 				// Space above the bar
+  "margin-bottom": 15, 			// Space below the bar
+  "margin-left": 15, 				// Space to the left of the bar
+  "margin-right": 0, 				// Space to the right of the bar
+  "fixed-center": false, 			// Center modules position
   "ipc": true, 					// Control waybar with `swaymsg bar` commands
   "bar_id": "bar-0",
   
   // Choose the order of the modules
-  "modules-left": ["sway/workspaces"], //, "custom/wttr#1", "custom/wttr#2"],
-	"modules-center": ["clock"],
-  "modules-right": ["idle_inhibitor", "network", "pulseaudio", "tray", "sway/language"],
+  "modules-left": ["sway/workspaces", "custom/wttr#1", "custom/wttr#2"],
+  "modules-center": ["cpu#1", "cpu#2", "memory#1", "memory#2", "temperature#1", "temperature#2"],
+  "modules-right": ["idle_inhibitor", "pulseaudio", "pulseaudio#2", "backlight", "backlight#2", "battery", "battery#2", "tray", "clock", "clock#2", "sway/language"],
 
   "sway/workspaces": {
     "disable-scroll": false,
     "disable-click": false,
     "all-outputs": true,
     "persistent_workspaces": {
-      "1:term": [],
-      "2:code": [],
-      "3:work": [],
-      "4:web": [],
-      "5:music": []
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
     },
     "format": "{icon}",
     "format-icons": {
-      "1:term": "",
-      "2:code": "",
-      "3:work": "",
-      "4:web": "",
-      "5:music": "",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
     },
+  },
+
+  "backlight": {
+    "interval": 2,
+    //"device": "amdgpu_bl0",
+    "format": "{icon}",
+    "format-icons": [""],
+    "on-scroll-up": "light -A 5%",
+    "on-scroll-down": "light -U 5%",
+    "smooth-scrolling-threshold": 1,
+  },
+  "backlight#2": {
+    "interval": 2,
+    //"device": "amdgpu_bl0",
+    "format": "{percent}%",
+    "on-scroll-up": "light -A 5%",
+    "on-scroll-down": "light -U 5%",
+    "smooth-scrolling-threshold": 1,
+  },
+
+  "battery": {
+		"interval": 60,
+		//"bat": "BAT1",
+		//"adapter": "ACAD",
+		"full-at": 100,
+		"design-capacity": false,
+    "states": {
+      "good": 95,
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon}",
+    "format-charging": "",
+    "format-plugged": "",
+    "format-full": "",
+    "format-icons": ["", "", "", "", "", ""],
+    "format-time": "{H}h {M}min",
+    "tooltip": true,
+  },
+  "battery#2": {
+    "interval": 60,
+		//"bat": "BAT1",
+		//"adapter": "ACAD",
+		"full-at": 100,
+		"design-capacity": false,
+    "states": {
+      "good": 95,
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{capacity}%",
+    "format-charging": "{capacity}%",
+    "format-plugged": "{capacity}%",
+    "format-full": "Full",
+    "format-alt": "{time}",
+    "format-time": "{H}h",
+    "tooltip": false,
   },
 
   "clock": {
     "interval": 60,
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
-    "format": "{:%H:%M %p}",
+    "format": "{:%H}",
+  },
+  "clock#2": {
+		"interval": 60,
+    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+    "format": "{:%M}",
+  },
+  "clock#3": {
+		"interval": 60,
+    "format": "{:%p}",
   },
 
   "idle_inhibitor": {

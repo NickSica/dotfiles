@@ -1,23 +1,35 @@
 #+TITLE: My Emacs Configuration
 #+AUTHOR: Nicholas Sica
-#+PROPERTY: header-args :tangle yes
+#+PROPERTY: header-args :tangle ~/.emacs.d/config.el
 * Initial Configuration
-** Fix Native Comp Issues
+** Fix Native Comp and PGTK Issues
 #+begin_src emacs-lisp
-  (setq gc-cons-threshold 100000000)
+  (setq-default pgtk-wait-for-event-timeout 0)
   (setq native-comp-async-report-warnings-errors nil)
+  (setq native-compile-prune-cache t)
+  ;; Use a hook so the message doesn't get clobbered by other messages.
+  (add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 #+end_src
 
 ** Bootstrap 'straight'
 #+BEGIN_SRC emacs-lisp
+  (setq straight-base-dir "~/.emacs.d/cache/")
+  ;; TEMPORARY FIX UNTIL STRAIGHT IS FIXED THIS WILL BREAK SOON
+  (setq straight-repository-branch "develop")
   (defvar bootstrap-version)
   (let ((bootstrap-file
-         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-        (bootstrap-version 5))
+         (expand-file-name "cache/straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
           (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
            'silent 'inhibit-cookies)
         (goto-char (point-max))
         (eval-print-last-sexp)))
@@ -30,18 +42,27 @@
 ** Bootstrap 'use-package'
 #+begin_src emacs-lisp
   (use-package straight
-    :custom (straight-use-package-by-default t)
-    (setq straight-base-dir "~/.emacs.d/cache/straight/"))
+    :custom (straight-use-package-by-default t))
+#+end_src
+
+** Emacs Startup Profiler
+#+begin_src emacs-lisp
+  (use-package esup)
 #+end_src
 
 ** Don't Litter
 #+begin_src emacs-lisp
   ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
-  (setq user-emacs-directory (expand-file-name "~/.emacs.d/cache/")
-        url-history-file (expand-file-name "url/history" user-emacs-directory))
+  (setq url-history-file (expand-file-name "cache/url/history/" user-emacs-directory))
+  (setq vc-follow-symlinks t)
 
   ;; Use no-littering to automatically set common paths to the new user-emacs-directory
-  (use-package no-littering)
+  (use-package no-littering
+    :init
+    (setq no-littering-etc-directory
+          (expand-file-name "cache/config/" user-emacs-directory))
+    (setq no-littering-var-directory
+          (expand-file-name "cache/data/" user-emacs-directory)))
 
   ;; Keep customization settings in a temporary file (thanks Ambrevar!)
   (setq custom-file
@@ -56,66 +77,10 @@
    (setq make-backup-files nil)
    (setq auto-save-default nil)
    #+END_SRC
-* Evil
+
+* Early Org Mode
 #+begin_src emacs-lisp
-  ;; Escape cancels all
-  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
-  ;; Rebind C-u since evil-mode uses it for scrolling
-  (global-set-key (kbd "C-M-u") 'universal-argument)
-
-  (use-package undo-tree
-    :init
-    (setq undo-tree-auto-save-history nil)
-    (global-undo-tree-mode 1))
-
-  (use-package goto-chg)
-
-  (setq evil-want-keybinding nil)
-  (setq evil-want-integration t)
-  (use-package evil
-    :init
-    (setq evil-respect-visual-line-mode t)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
-    (setq evil-want-fine-undo t)
-    (setq evil-undo-system 'undo-tree)
-    (setq evil-search-module 'evil-search)
-    :config
-    (evil-mode 1)
-
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-    (define-key evil-insert-state-map (kbd "C-d") 'evil-delete-backward-char-and-join)
-
-    ;; Use visual line motions even outside of visual-line-mode buffers
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
-
-  (use-package evil-numbers
-    :config
-    (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt))
-
-  (use-package evil-collection
-    :after evil
-    :init
-    (setq evil-collection-company-use-tng nil)
-    :custom
-    ;; Is this a bug in evil-collection?
-    (setq evil-collection-bind-tab-p nil)
-    :config
-    (evil-collection-init))
-
-  ;; Treat '_' as a word character
-  (modify-syntax-entry ?_ "w")
-#+end_src
-
-* Which-Key Configuration
-#+begin_src emacs-lisp
-  (use-package which-key
-    ;(diminish 'which-key-mode)
-    :config
-    (which-key-mode)
-    (setq which-key-idle-delay 0.3))
+(use-package org :straight (:type built-in))
 #+end_src
 
 * General(the keybinding package)
@@ -125,14 +90,13 @@
     (general-evil-setup t)
 
     (general-create-definer sica/leader-key-def
-      :keymaps '(normal insert visual emacs)
+      :keymaps '(normal visual)
       :prefix "SPC"
       :global-prefix "C-SPC")
 
     (general-create-definer sica/ctrl-c-keys
       :prefix "C-c"))
 
-        ;(require 'general)
   (sica/leader-key-def
     "t"   '(:ignore t :which-key "toggles")
     "b"   '(:ignore t :which-key "buffers")
@@ -147,7 +111,7 @@
 ** Splash Screen and Font
 #+begin_src emacs-lisp
   (setq inhibit-startup-screen t)
-  (set-face-attribute 'default nil :font "CaskaydiaCoveNerdFont" :height 130)
+  (set-face-attribute 'default nil :font "CaskaydiaCoveNerdFont" :height 140)
 #+end_src
 ** UI Configuration
 **** Get rid of bars and add line numbers
@@ -156,15 +120,19 @@
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (tooltip-mode -1)
-  (global-display-line-numbers-mode 1)
+  ;(global-display-line-numbers-mode 1)
+  (setq-default display-line-numbers 'visual
+                display-line-numbers-widen t
+                display-line-numbers-current-absolute t)
   (save-place-mode 1)
+  (global-hl-line-mode -1) ;; Makes it hard to see selections
+  (global-prettify-symbols-mode 1)
   (global-auto-revert-mode 1)
   (set-fringe-mode 10)
 #+end_src
 **** Smooth Scrolling and Bar Cursor
 #+begin_src emacs-lisp
-  (pixel-scroll-mode 1)
-  (setq scroll-step 1)
+  (pixel-scroll-precision-mode 1)
   (setq-default cursor-type 'bar)
 #+end_src
 **** Always use tabs for indentation
@@ -180,6 +148,111 @@
   ;;  (dtrt-indent-global-mode 1))
 #+end_src
 
+* Avy
+#+begin_src emacs-lisp
+  (use-package avy
+    :config
+    (sica/leader-key-def
+      "a" '(:ignore t :which-key "avy")
+      "ac" 'evil-avy-goto-char-timer))
+#+end_src
+
+* Evil
+#+begin_src emacs-lisp
+  ;; Escape cancels all
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  ;; Rebind C-u since evil-mode uses it for scrolling
+  (global-set-key (kbd "C-M-u") 'universal-argument)
+
+  (use-package undo-fu
+    :custom
+    (undo-limit 67108864)
+    (undo-strong-limit 100663296)
+    (undo-outer-limit 1006632960))
+  (use-package undo-fu-session
+    :custom
+    (undo-fu-session-directory "~/.emacs.d/cache/undo")
+    :config
+    (undo-fu-session-global-mode))
+
+  (use-package goto-chg)
+
+  (setq evil-want-keybinding nil)
+  (setq evil-want-integration t)
+  (use-package evil
+    :init
+    (setq evil-respect-visual-line-mode t)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    (setq evil-want-fine-undo t)
+    (setq evil-undo-system 'undo-fu)
+    (setq evil-search-module 'evil-search)
+    :config
+    (evil-mode 1)
+
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-d") 'evil-delete-backward-char-and-join)
+
+    ;; Use visual line motions even outside of visual-line-mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+
+  (use-package evil-numbers
+    :after evil
+    :config
+    (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt))
+
+  (use-package evil-collection
+    :after evil
+    :init
+    (setq evil-collection-company-use-tng nil)
+    :custom
+    ;; Is this a bug in evil-collection?
+    (setq evil-collection-bind-tab-p nil)
+    :config
+    (evil-collection-init))
+
+  (use-package evil-surround
+    :after evil
+    :config
+    (global-evil-surround-mode 1))
+
+  (use-package evil-textobj-tree-sitter
+    :after evil)
+
+  (use-package evil-goggles
+    :after evil
+    :config
+    (evil-goggles-mode)
+    (evil-goggles-use-diff-faces))
+
+  (use-package evil-commentary
+    :after evil
+    :config (evil-commentary-mode))
+
+  (use-package evil-owl
+    :after evil
+    :custom
+    (evil-owl-display-method 'posframe)
+    (evil-owl-extra-posframe-args '(:width 50 :height 20))
+    (evil-owl-max-string-length 5)
+    :config
+    (evil-owl-mode))
+
+  ;; Treat '_' as a word character
+  (modify-syntax-entry ?_ "w")
+#+end_src
+
+* Which-Key Configuration
+#+begin_src emacs-lisp
+  (use-package which-key
+    ;(diminish 'which-key-mode)
+    :config
+    (which-key-mode)
+    (setq which-key-idle-delay 0.3))
+#+end_src
+
 * Advanced UI Config
 ** Dashboard
 #+begin_src emacs-lisp
@@ -192,6 +265,10 @@
 ** Centaur Tabs
 #+begin_src emacs-lisp
   (use-package centaur-tabs
+    :bind
+    (:map evil-normal-state-map
+          ("g t" . 'centaur-tabs-forward)
+          ("g T" . 'centaur-tabs-backward))
     :config
     (centaur-tabs-mode t)
     (centaur-tabs-headline-match)
@@ -200,16 +277,14 @@
     ;; To get underline to display correctly on non-spacemacs
     (setq x-underline-at-descent-line t)
     (setq centaur-tabs-set-icons t)
-    (setq centaur-tabs-gray-out-icons t)
-    (sica/leader-key-def
-      "cp" 'centaur-tabs-backward
-      "cn" 'centaur-tabs-forward))
+    (setq centaur-tabs-gray-out-icons t))
+
 #+end_src
 ** Parentheses
 *** Show Matching
 #+begin_src emacs-lisp
-(setq show-paren-delay 0)
-(show-paren-mode 1)
+;(setq show-paren-delay 0)
+;(show-paren-mode 1)
 #+end_src
 *** Smartparens
 #+begin_src emacs-lisp
@@ -220,7 +295,8 @@
     (smartparens-global-mode t)
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'org-mode "[" nil :actions nil)
-    (sp-local-pair 'verilog-mode "'" nil :actions nil))
+    (sp-local-pair 'verilog-mode "'" nil :actions nil)
+    (sp-pair "{" nil :post-handlers '(("||\n[i]" "RET"))))
     #+end_src
 *** Rainbow Delimiters
 #+begin_src emacs-lisp
@@ -294,8 +370,7 @@
 
 ** Treemacs
 #+begin_src emacs-lisp
-  (use-package treemacs
-    :defer t)
+  (use-package treemacs)
 
   (use-package treemacs-evil
     :after treemacs evil)
@@ -314,38 +389,44 @@
 
 ** Theme
    #+begin_src emacs-lisp
-   ;; All The Icons
-   (use-package all-the-icons)
+     ;; All The Icons
+     (use-package all-the-icons)
+     (use-package nerd-icons)
 
-   (use-package doom-themes
-   :custom
-   (setq doom-themes-enable-italic t
-     doom-themes-enable-bold t)
-   :config
-     (load-theme 'doom-city-lights t)
-     ;;(load-theme 'doom-badger t)
-     (doom-themes-neotree-config)
-     (doom-themes-org-config))
+     (use-package doom-themes
+     :custom
+     (setq doom-themes-enable-italic t
+       doom-themes-enable-bold t)
+     :config
+       (load-theme 'doom-moonlight t)
+       ;;(load-theme 'doom-city-lights t)
+       ;;(load-theme 'doom-badger t)
+       (doom-themes-neotree-config)
+       (doom-themes-org-config))
    #+end_src
 ** Modeline
    #+begin_src emacs-lisp
      (use-package minions
-       :hook (doom-modeline-mode . minions-mode))
+       ;;:hook (doom-modeline-mode . minions-mode))
+       :config
+       (minions-mode))
 
+     ;; Disabled since it causes a lot of lag
+     ;; TODO: find replacement?
      (use-package doom-modeline
        :hook (after-init . doom-modeline-mode)
        :custom
-       (setq
-       doom-modeline-lsp t
-       doom-modeline-github t
-       doom-modeline-minor-modes t
-       doom-modeline-persp-name nil
-       doom-modeline-buffer-file-name-style 'truncate-except-project
-       doom-modeline-icon t
-       doom-modeline-major-mode-icon t)
+       (doom-modeline-lsp t)
+       (doom-modeline-github t)
+       (doom-modeline-minor-modes t)
+       (doom-modeline-persp-name nil)
+       (doom-modeline-buffer-file-name-style 'truncate-except-project)
+       (doom-modeline-icon t)
+       (doom-modeline-major-mode-icon t)
+       (inhibit-compacting-font-caches t "Recommended option for laginess")
        :config
        (set-cursor-color "cyan")
-       (line-number-mode t)
+       ;(line-number-mode t)
        (column-number-mode t))
    #+end_src
 
@@ -353,14 +434,6 @@
      #+begin_src emacs-lisp
      (use-package diminish)
      #+end_src
-
-
-* Undo Tree
-  #+begin_src emacs-lisp
-    (use-package undo-tree
-      :config
-      (global-undo-tree-mode))
-  #+end_src
 
 * Projectile Configuration
   #+begin_src emacs-lisp
@@ -423,14 +496,12 @@
       (autoload 'projectile-project-root "projectile")
       (setq consult-project-root-function #'projectile-project-root)
 
-      (setq completion-in-region-function #'consult-completion-in-region)
+      (setq completion-in-region-function #'consult-completion-in-region))
 
-      :bind (("C-s" . consult-line)
-             ("C-M-l" . consult-imenu)
-             ("C-M-j" . persp-switch-to-buffer*)
-
-             :map minibuffer-local-map
-             ("C-r" . consult-history)))
+    (sica/leader-key-def
+      "c"   'consult-line
+      "M-l" 'consult-imenu
+      "M-j" 'persp-switch-to-buffer*)
 
     (use-package marginalia
       :after vertico
@@ -449,18 +520,21 @@
 
     ;; Completion in region
     (use-package corfu
-      :straight (:host github :repo "minad/corfu")
+      ;:straight (:host github :repo "minad/corfu")
       :bind (:map corfu-map
                   ("C-j" . corfu-next)
                   ("C-k" . corfu-previous)
                   ("TAB" . corfu-next)
-                  ("S-TAB" . previous)
+                  ("S-TAB" . corfu-previous)
                   ("C-f" . corfu-insert))
       :custom
       (corfu-cycle t)
       (corfu-preselect-first nil)
+      (corfu-auto t)
+      (corfu-auto-delay 0)
+      (corfu-auto-prefix 2)
       :init
-      (corfu-global-mode))
+      (global-corfu-mode))
 
     (setq tab-always-indent 'complete)
     (setq c-tab-always-indent 'complete)
@@ -502,15 +576,15 @@
 
 * Org Mode Configuration
   #+begin_src emacs-lisp
-    (defun enhance-ui-for-orgmode()
-      "Enhance UI for orgmode."
-      (org-bullets-mode 1)
-      (org-autolist-mode 1)
-      (setq tab-width 2)
-      (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
-        (set-face-attribute (car face) nil
-                            :height 1.0
-                            :background nil)))
+    ;;(defun enhance-ui-for-orgmode()
+    ;;  "Enhance UI for orgmode."
+    ;;  (org-bullets-mode 1)
+    ;;  (org-autolist-mode 1)
+    ;;  (setq tab-width 2)
+    ;;  (dolist(face '(org-level-1 org-level-2 org-level-3 org-level4 org-level-5))
+    ;;    (set-face-attribute (car face) nil
+    ;;                        :height 1.0
+    ;;                        :background nil)))
 
     (use-package org-autolist)
     (use-package org-bullets)
@@ -521,7 +595,7 @@
     (dolist (hook '(text-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
 
-    (add-hook 'org-mode-hook 'enhance-ui-for-orgmode)
+    ;;(add-hook 'org-mode-hook 'enhance-ui-for-orgmode)
 
     (defun filter-org-skip-subtree-if-priority (priority)
       "Skip an agenda subtree if it has a priority of PRIORITY.
@@ -557,15 +631,27 @@
   #
 * Magit Configuration
 #+begin_src emacs-lisp
-  (use-package magit
-  :custom
-  (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  ;;(use-package magit
+  ;;:ensure t
+  ;;:custom
+  ;;(setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
   ;; NOTE: Make sure to configure a GitHub token before using this package!
   ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
   ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
-  (use-package forge)
+  ;;(use-package forge)
 #+end_src
+
+* PDF Tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :hook (pdf-view-mode . (lambda()
+                             (setq display-line-numbers nil)))
+    :mode ("\\.pdf\\'" . pdf-view-mode)
+    :config
+    (pdf-tools-install))
+#+end_src
+
 * Unsorted Shit
 #+begin_src emacs-lisp
   ;; PATH
@@ -577,13 +663,13 @@
        exec-path)))
 
   ;; Some term enhancement
-  (defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
-  (if(memq (process-status proc) '(signal exit))
-    (let((buffer (process-buffer proc)))
-      ad-do-it
-      (kill-buffer buffer))
-    ad-do-it))
-  (ad-activate 'term-sentinel)
+  ;(defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
+  ;(if(memq (process-status proc) '(signal exit))
+  ;  (let((buffer (process-buffer proc)))
+  ;    ad-do-it
+  ;    (kill-buffer buffer))
+  ;  ad-do-it))
+  ;(ad-activate 'term-sentinel)
 
   (defadvice ansi-term (before force-bash)
   (interactive (list "/bin/zsh")))
@@ -604,6 +690,19 @@
   :init
   (with-eval-after-load 'flycheck
       (flycheck-pos-tip-mode)))
+
+  ;; Latex Flycheck
+  ;(flycheck-define-command-checker 'tex-latex
+  ;  "Latex syntax checker"
+  ;    :command (lambda ()
+  ;               (setq TeX-error-overview-active-buffer (TeX-active-buffer))
+  ;               (TeX-error-overview-make-entries (TeX-master-directory)))
+  ;    :error-patterns
+  ;    ;;((error line-start "#(Error" ((one-or-more not-newline)) (file-name) line "\n(" (message) (one-or-more anychar) line-end))
+  ;    '((error line-start (file-name) ":" line ": error:" (message) line-end))
+  ;    :modes '(tex-mode latex-mode))
+
+  ;(add-to-list 'flycheck-checkers 'tex-latex)
   #+end_src
 
 * Quickrun
@@ -630,32 +729,28 @@
   (setq next-line-add-newlines t)
   (define-key global-map (kbd "RET") 'newline-and-indent)
   (define-key evil-motion-state-map (kbd "C-u") 'evil-scroll-up)
-  (add-hook 'prog-mode-hook
-            (lambda () (
-                        (modify-syntax-entry ?_ "w")
-                        (modify-syntax-entry ?- "w"))))
+  (defun sica/all-major-mode-setup()
+  (list (modify-syntax-entry ?_ "w")
+        (modify-syntax-entry ?- "w")))
+
+  ;;(add-hook 'after-change-major-mode-hook 'sica/all-major-mode-setup)
+  (add-hook 'after-change-major-mode-hook
+            (lambda () (list (modify-syntax-entry ?_ "w")
+        (modify-syntax-entry ?- "w"))))
 
   (sica/leader-key-def
     "i" '(:ignore t :which-key "indent")
     "ij" 'newline
-    "s"   '(:ignore t :which-key "lang specific")
-    "sc"  '(:ignore t :which-key "C/C++")
-    "sci" 'c-indent-line-or-region
-    "sr"  '(:ignore t :which-key "Rust")
-    "srs" 'lsp-rust-analyzer-status
-    "srf" 'rustic-format-buffer)
+    "s"   '(:ignore t :which-key "lang specific"))
 #+end_src
 
 ** LSP Mode
 #+begin_src emacs-lisp
-  (use-package flycheck
-    :init (global-flycheck-mode))
-
   ;;(use-package prog-major-mode
   ;;  :hook (progr-major-mode . dtrt-indent-mode))
-  (defun sica/lsp-compl-mode-setup ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless)))
+  ;;(defun sica/lsp-compl-mode-setup ()
+  ;;  (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+  ;;        '(orderless)))
     ;(setq-local completion-at-point-functions (list (cape-capf-buster
     ;                                                 #'lsp-completion-at-point))))
     ;(add-to-list 'completion-at-point-functions #'cape-capf-buster)
@@ -663,30 +758,43 @@
     ;(add-to-list 'completion-at-point-functions #'cape-tex)
     ;(add-to-list 'completion-at-point-functions #'cape-dabbrev)
     ;(add-to-list 'completion-at-point-functions #'cape-keyword))
+  ;(lsp-completion-mode . sica/lsp-compl-mode-setup)
 
+
+  (defun sica/lsp-save-hooks ()
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
+  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+  (defun sica/lsp-flycheck-checker ()
+    (pcase major-mode
+      ;;('rustic-mode
+      ;; (flycheck-add-next-checker 'lsp 'rustic-clippy))
+      ((or 'LaTeX-mode 'latex-mode )
+       (flycheck-add-next-checker 'lsp 'tex-chktex))))
   (use-package lsp-mode
     :commands lsp
-    :hook ((lsp-completion-mode . sica/lsp-compl-mode-setup)
+    :hook ((lsp-after-initialize . sica/lsp-flycheck-checker)
            (prog-major-mode . lsp-prog-major-mode-enable)
            (vhdl-mode . lsp-deferred)
            (verilog-mode . lsp-deferred)
            (c++-mode . lsp-deferred)
+           (c++-mode . sica/lsp-save-hooks)
            (c-mode . lsp-deferred)
+           (c-mode . sica/lsp-save-hooks)
            (cuda-mode . lsp-deferred)
            (java-mode . lsp-deferred)
-           (latex-mode . lsp-deferred)
+           (LaTeX-mode . lsp-deferred)
+           (bibtex-mode . lsp-deferred)
            (python-mode . lsp-deferred)
            (web-mode . lsp-deferred)
            (lsp-mode . lsp-enable-which-key-integration)
            (go-mode . lsp-deferred)
-           (rustic-mode . lsp-deferred))
+           (rustic-mode . lsp-deferred)
+           (rustic-mode . lsp-inlay-hints-mode)
+           (rust-mode . lsp-deferred))
     :bind (:map evil-insert-state-map
-                ("TAB" . indent-for-tab-command)
-                ("M-TAB" . tab-to-tab-stop)
-                ;("TAB" . tab-to-tab-stop)
-                ;("M-TAB" . indent-for-tab-command)
-                :map evil-normal-state-map
-                ("TAB" . indent-for-tab-command))
+                ("M-TAB" . indent-for-tab-command)
+                ("C-TAB" . tab-to-tab-stop))
     :init
     (sica/leader-key-def
       "l" '(:ignore t :which-key "lsp")
@@ -704,28 +812,45 @@
     ;;("C-c C-c q" . lsp-workspace-restart)
     ;;("C-c C-c Q" . lsp-workspace-shutdown)
     :custom
+    ;; Generic Config
     (lsp-use-plists t)
-    (lsp-rust-analyzer-cargo-watch-command "clippy")
-    (lsp-rust-analyzer-server-display-inlay-hints t)
     (lsp-completion-provider :none)
     (lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-    (lsp-clangd-binary-path "/usr/bin/clangd")
     (lsp-file-watch-threshold 1500)
     (lsp-enable-which-key-integration t)
-    (lsp-enable-on-type-formatting nil)
-    (lsp-enable-indentation nil)
+    (lsp-enable-on-type-formatting t)
+    (lsp-enable-indentation t)
     (read-process-output-max (* 1024 1024))
     (lsp-eldoc-render-all t)
-    (lsp-idle-delay 0.6))
+    (lsp-idle-delay 0.6)
+    (lsp-keep-workspace-alive nil)
+    ;; Latex Config
+    ;;(lsp-tex-server 'digestif)
+    ;; Rust Config
+    (lsp-rust-analyzer-cargo-watch-command "clippy")
+    (lsp-rust-analyzer-cargo-watch-args "--all-features")
+    (lsp-rust-analyzer-server-display-inlay-hints t)
+    (lsp-rust-all-features t)
+    (lsp-inlay-hint-enable t)
+    (lsp-semantic-tokens-enable t)
+
+    ;; C/C++ Config
+    (lsp-clangd-binary-path "/usr/bin/clangd")
+    :config
+    (define-key lsp-mode-map (kbd "C-c C-l") lsp-command-map))
 
   (use-package lsp-ui
     :after lsp-mode
     :commands lsp-ui-mode
     :hook (lsp-mode . lsp-ui-mode)
     :custom
-    (setq lsp-ui-sideline-enable t)
-    (setq lsp-ui-sideline-show-hover nil)
-    (setq lsp-ui-doc-position 'bottom)
+    (lsp-ui-sideline-enable t)
+    (lsp-ui-sideline-show-hover nil)
+    (lsp-ui-doc-enable t)
+    (lsp-ui-doc-show-with-mouse nil)
+    (lsp-ui-doc-delay 3)
+    ;;(lsp-ui-doc-position 'bottom)
+    :config
     (lsp-ui-doc-show))
 
   (use-package lsp-treemacs
@@ -743,23 +868,54 @@
     (dap-tooltip-mode 1)
     (tooltip-mode 1)
     (dap-ui-controls-mode 1))
+
+  (use-package eldoc-box
+    :hook (lsp-mode . eldoc-box-hover-mode))
 #+end_src
 
 ** Tree-Sitter
 #+begin_src emacs-lisp
-  (use-package tree-sitter
-    :after flycheck-mode
-    :config
-    (global-tree-sitter-mode))
-  (use-package tree-sitter-langs
-    :after tree-sitter)
+  ;;(defun sica/setup-grammars ()
+  ;;  (dolist (mapping '((LaTeX-mode . LaTeX-ts-mode)
+  ;;                     (bibtex-mode . bibtex-ts-mode)))
+  ;;    (add-to-list 'major-mode-remap-alist mapping)))
 
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  (use-package treesit
+    :straight (:type built-in)
+    :config
+    (setq treesit-font-lock-level 4)
+    (setq treesit-extra-load-path '(expand-file-name "cache/data/treesit/" user-emacs-directory)))
+  ;;  (sica/setup-grammars))
+
+  ;; This does not work with built-in treesit
+  ;;(use-package tree-sitter-langs
+  ;;  :after treesit)
+
+  ;; This does not work with built-in treesit
+  ;;(use-package ts-fold
+  ;;  :straight (:host github :repo "emacs-tree-sitter/ts-fold")
+  ;;  :config
+  ;;  (global-ts-fold-indicators-mode))
+
+  ;; TODO: Check up on this after emacs 30
+  (use-package treesit-auto
+    :config
+    (setq treesit-auto-install t)
+    (mkdir (expand-file-name "cache/data/treesit-repos/" user-emacs-directory) :parent)
+    (global-treesit-auto-mode))
+
+  (add-to-list 'treesit-language-source-alist
+               '(LaTeX "https://github.com/latex-lsp/tree-sitter-latex"))
+  ;;'(bibtex "https://github.com/latex-lsp/tree-sitter-bibtex")
+
+  ;; Not in MELPA yet methinks
+  ;;(use-package combobulate)
+  ;;(add-hook 'tree-sitter-after-on-hook #'combobulate-mode)
 #+end_src
 
 ** Verilog/SystemVerilog
 #+begin_src emacs-lisp
-  (defun sica/verilog-hook()
+  (defun sica/verilog-mode-hook()
     (setq tab-width 2))
 
   (custom-set-variables
@@ -772,12 +928,14 @@
   ;;(lsp-clients-svlangserver-workspace-additional-dirs . ("/some/lib/path"))))
 
   (add-to-list 'auto-mode-alist
-               '("\\.s?v\\'" . verilog-mode))
+               '("\\.s?v\\'" . verilog-ts-mode))
 
-  (use-package verilog-mode
-    :hook (verilog-mode . sica/verilog-mode-hook)
-    :config
-    :bind (:map verilog-mode-map
+  (use-package verilog-mode)
+
+  (use-package verilog-ts-mode
+    :after verilog-mode
+    :hook (verilog-ts-mode . sica/verilog-mode-hook)
+    :bind (:map verilog-ts-mode-map
                 ("DEL" . 'evil-delete-backward-char-and-join))
     :config
     (setq verilog-indent-level 2)
@@ -794,10 +952,7 @@
 
 ** VHDL
 #+begin_src emacs-lisp
-  ;;(lsp-register-client (make-lsp-client :new-connection (lsp-stdio-connection '("vhdl-tool" "lsp"))
-  ;;                                      :major-modes '(vhdl-mode)
-  ;;                                      :language-id "VHDL"
-  ;;                                      :server-id 'lsp-vhdl-mode))
+  (use-package vhdl-ts-mode)
 #+end_src
 
 ** Emacs Lisp
@@ -806,8 +961,8 @@
     (setq tab-width 2))
 
   (use-package emacs-lisp-mode
-    :after flycheck-mode
     :straight nil
+    :after flycheck-mode
     :hook ((emacs-lisp-mode . flycheck-mode)
            (emacs-lisp-mode . sica/elisp-hook)))
 
@@ -838,25 +993,42 @@
 
 ** Rust
 #+begin_src emacs-lisp
+  (sica/leader-key-def
+    :states '(normal visual)
+    :keymaps 'rustic-mode-map
+    "s"  '(:ignore t :which-key "Rust")
+    "ss" 'lsp-rust-analyzer-status
+    "sf" 'rustic-format-buffer)
+
   (defun sica/rustic-mode-hook ()
-    ;; so that run C-c C-c C-r works without having to confirm, but don't try to
-    ;; save rust buffers that are not file visiting. Once
-    ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
-    ;; no longer be necessary.
-    (when buffer-file-name
-      (setq-local buffer-save-without-query t))
     (setq tab-width 4)
-    (setq c-basic-offset 4)
     (setq indent-tabs-mode nil))
 
+  ;;(require 'rust-ts-mode)
+  (use-package rust-ts-mode
+    :straight (:type built-in))
+
+  (setq rust-ts-mode-hook rust-mode-hook)
+  (use-package rust-mode
+    :straight (:host github :repo "NickSica/rust-mode")
+    ;;:hook (rust-ts-mode . (lambda () (cl-delete-if (lambda (element) (equal (cdr element) 'rust-ts-mode)) auto-mode-alist)))
+    :init
+    (setq rust-mode-treesitter-derive t))
+
+  ;; TODO: treesitter
   (use-package rustic
+    ;; Remove when ts-mode gets pushed to master
+    ;;:straight (:host github :repo "brotzeit/rustic" :branch "rustic-ts-mode")
     :hook (rustic-mode . sica/rustic-mode-hook)
-    ;; comment to disable rustfmt on save
+    ;;:init
+    ;;(setq rustic-treesitter-derive t)
     :config
-    (require 'dap-gdb-lldb)
+    ;; comment to disable rustfmt on save
     (setq rustic-format-on-save t)
     (setq rustic-format-on-save-method 'rustic-format-buffer)
-    (setq rustic-rustfmt-bin "/usr/bin/rustfmt")
+    (setq rustic-default-clippy-arguments "--all-features")
+    (setq rustic-clippy-arguments "--all-features")
+    (require 'dap-gdb-lldb)
     (dap-register-debug-template "Rust::GDB Run Configuration"
                                  (list :type "gdb"
                                        :request "launch"
@@ -864,7 +1036,18 @@
                                        :gdbpath "rust-gdb"
                                        :target nil
                                        :cwd nil)))
-#+end_src
+  (setq rustic-rustfmt-bin "/usr/bin/rustfmt")
+  (setq sica/my-rustic-tsauto-config
+        (make-treesit-auto-recipe
+         :lang 'rust
+         :ts-mode 'rustic-mode
+         :remap '(rustic-mode)
+         :url "https://github.com/tree-sitter/tree-sitter-rust"
+         :revision "master"))
+         ;;:source-dir (expand-file-name "cache/data/treesit-repos/" user-emacs-directory)))
+  (add-to-list 'treesit-auto-recipe-list sica/my-rustic-tsauto-config)
+  (add-to-list 'global-treesit-auto-modes 'rustic-mode)
+  #+end_src
 
 ** Go
 #+begin_src emacs-lisp
@@ -875,10 +1058,17 @@
 
 ** C/C++
 #+begin_src emacs-lisp
+  (sica/leader-key-def
+    :states '(normal visual)
+    :keymaps 'c-c++-mode-map
+    "s"  '(:ignore t :which-key "C/C++")
+    "si" 'c-indent-line-or-region)
+
   (defun sica/c-mode-hook ()
     (setq tab-width 4)
+    (setq c-basic-offset 4)
     (setq c-default-style "linux")
-    (setq c-basic-offset 'tab-width)
+    (setq c-c++-enable-clang-format-on-save t)
     (when (and (stringp buffer-file-name)
                (string-match "\\.sm\\'" buffer-file-name))
       (setq tab-width 2)
@@ -890,6 +1080,9 @@
   (add-to-list 'auto-mode-alist '("\\.c\\'" . c-mode))
   (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
   (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-mode))
+
+  (setq c-ts-mode-hook c-mode-hook)
+  (setq c++-ts-mode-hook c++-mode-hook)
 
   (use-package c-mode
     :straight nil
@@ -910,6 +1103,7 @@
 
 ** Python
 #+begin_src emacs-lisp
+  ; Use python-base-mode for hooks
   (use-package python-mode
     :config
     (require 'dap-python))
@@ -944,8 +1138,7 @@
     (setq js2-mode-show-strict-warnings nil)
 
     ;; Set up proper indentation in JavaScript and JSON files
-    (add-hook 'js2-mode-hook #'sica/set-js-indentation)
-    (add-hook 'json-mode-hook #'sica/set-js-indentation))
+    (add-hook 'js-base-mode-hook #'sica/set-js-indentation))
 
   (use-package typescript-mode
     :init
@@ -964,23 +1157,26 @@
 
 ** HTML/CSS
 #+begin_src emacs-lisp
-	(use-package emmet-mode)
-	(use-package web-mode)
+  (use-package emmet-mode)
+  (use-package web-mode)
 
-	(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-	(add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
-	(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
-	(add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
-	(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
 
-	(defun sica/web-mode-hook ()
-		(setq web-mode-markup-indent-offset 2)
-		(setq web-mode-css-indent-offset 2)
-		(setq web-mode-code-indent-offset 2)
-		(setq-local indent-tabs-mode nil)
-	)
+  (defun sica/web-mode-hook ()
+      (setq web-mode-markup-indent-offset 2)
+      (setq web-mode-css-indent-offset 2)
+      (setq web-mode-code-indent-offset 2)
+      (setq-local indent-tabs-mode nil)
+  )
 
-	(add-hook 'web-mode-hook #'sica/web-mode-hook)
+  ; TODO: uncomment when web ts mode
+  ;(setq web-ts-mode-hook web-mode-hook)
+
+  (add-hook 'web-mode-hook #'sica/web-mode-hook)
 #+end_src
 
 ** Haskell
@@ -993,77 +1189,120 @@
 
 ** Latex
 #+begin_src emacs-lisp
-  (defcustom tex-my-viewer
-    "zathura --fork -s -x \"emacsclient --eval '(progn (switch-to-buffer  (file-name-nondirectory \"'\"'\"%{input}\"'\"'\")) (goto-line %{line}))'\""
-    "PDF Viewer for TeX documents. You may want to fork the viewer so that it detects when the same document is launched twice, and persists when Emacs gets closed.
+  ;; This is a can of worms https://karthinks.com/software/latex-input-for-impatient-scholars/#the-state-of-latex-editing-in-emacs
+  (sica/leader-key-def
+    :states '(normal visual)
+    :keymaps 'LaTeX-mode-map
+    "s"  '(:ignore t :which-key "LaTeX")
+    "sf" 'LaTeX-fill-region
+    "sr" 'fill-region
+    "se" 'LaTeX-environment
+    "ss" 'LaTeX-section
+    "sc" 'TeX-command-run-all
+    "so" 'TeX-error-overview
+    "sp" 'TeX-previous-error
+    "sn" 'TeX-next-error)
 
-  Simple command:
+  ;; TODO: revisit for treesitter mode hooks
+  (use-package auctex
+    :hook ((LaTeX-mode . turn-on-reftex)
+           (LaTeX-mode . visual-line-mode)
+           (LaTeX-mode . flyspell-mode)
+           (LaTeX-mode . auto-fill-mode)
+           (LaTeX-mode . LaTeX-math-mode))
+    :custom
+    (TeX-auto-save t)
+    (TeX-parse-self t)
+    (TeX-master nil)
+    (TeX-PDF-mode t)
+    (TeX-newline-function 'newline-and-indent)
+    (TeX-view-program-selection '((output-pdf "PDF Tools")))
+    (TeX-source-correlate-method (quote synctex))
+    (TeX-source-correlate-mode t)
+    (TeX-source-correlate-start-server t)
+    (TeX-error-overview-open-after-TeX-run t))
+    ;;:config
+    ;;(flycheck-add-next-checker 'lsp 'tex-chktex))
+  ;;(add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer))
 
-    zathura --fork
+  ;;(use-package lsp-latex
+  ;;  :config
+  ;;  (require 'lsp-latex)) ;; Only supports texlab
 
-  We can use
-
-    emacsclient --eval '(progn (switch-to-buffer  (file-name-nondirectory \"%{input}\")) (goto-line %{line}))'
-
-  to reverse-search a pdf using SyncTeX. Note that the quotes and double-quotes matter and must be escaped appropriately."
-  :safe 'stringp)
-
-  (use-package tex
-    :straight auctex
-    :init
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t)
-    (setq-default TeX-master nil)
-    (setq TeX-PDF-mode t))
+  (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
 
   (use-package reftex
     :init
     (setq reftex-plug-into-AUCTeX t)
     :config
-    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
-    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
-    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode))
+    (setq fill-column 80))
+
+  (use-package citar
+    :hook ((LaTeX-mode . citar-capf-setup)
+           (org-mode . citar-capf-setup)))
+
+  (use-package xenops
+    :hook
+    (LaTeX-mode . xenops-mode)
+    :custom
+    (xenops-cache-directory (expand-file-name "cache/data/" user-emacs-directory)))
+
+  ;(use-package cdlatex
+  ;  :hook ((LaTeX-mode . cdlatex-mode)
+  ;         (cdlatex-tab . LaTeX-indent-line)
+  ;         (cdlatex-mode . (lambda ()
+  ;                           (define-key cdlatex-mode-map "_" nil)))))
+
+  ;(evil-define-minor-mode-key 'insert 'cdlatex-mode-map
+  ;  (kbd "<tab>") 'cdlatex-tab)
+
+  ;; Array/tabular input with org-tables and cdlatex
+  (use-package org-table
+    :straight nil
+    :after cdlatex
+    :bind (:map orgtbl-mode-map
+                ("<tab>" . lazytab-org-table-next-field-maybe)
+                ("TAB" . lazytab-org-table-next-field-maybe))
+    :init
+    (add-hook 'cdlatex-tab-hook 'lazytab-cdlatex-or-orgtbl-next-field 90)
+    ;; Tabular environments using cdlatex
+    (add-to-list 'cdlatex-command-alist '("smat" "Insert smallmatrix env"
+                                          "\\left( \\begin{smallmatrix} ? \\end{smallmatrix} \\right)"
+                                          lazytab-position-cursor-and-edit
+                                          nil nil t))
+    (add-to-list 'cdlatex-command-alist '("bmat" "Insert bmatrix env"
+                                          "\\begin{bmatrix} ? \\end{bmatrix}"
+                                          lazytab-position-cursor-and-edit
+                                          nil nil t))
+    (add-to-list 'cdlatex-command-alist '("pmat" "Insert pmatrix env"
+                                          "\\begin{pmatrix} ? \\end{pmatrix}"
+                                          lazytab-position-cursor-and-edit
+                                          nil nil t))
+    (add-to-list 'cdlatex-command-alist '("tbl" "Insert table"
+                                          "\\begin{table}\n\\centering ? \\caption{}\n\\end{table}\n"
+                                          lazytab-position-cursor-and-edit
+                                          nil t nil)))
+
+  (use-package lazytab
+    :after org-table
+    :straight (:host github :repo "karthink/lazytab"))
+
+  (use-package evil-tex
+    :hook (LaTeX-mode . evil-tex-mode))
+
+  ;;(add-hook 'latex-mode-hook 'LaTeX-mode)
 #+end_src
 
-* Ligatures
+* Natural Language Server
 #+begin_src emacs-lisp
-  (use-package ligature
-  :straight (:repo "https://github.com/mickeynp/ligature.el.git")
-  :config
-  ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-             ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-             "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-             "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-             "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-             "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-             "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-             "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-             ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-             "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-             "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-             "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-             "\\\\" "://"))
-  (ligature-set-ligatures 'cc-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-             ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-             "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-             "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-             "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-             "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-             "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-             "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-             ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-             "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-             "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-             "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-             "\\\\" "://"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+  (use-package lsp-ltex
+    :hook (text-mode . (lambda()
+                         (require 'lsp-ltex)))
+    :init
+    (setq lsp-ltex-version "16.0.0"))
+#+end_src
+
+* Set Garbage Collector Back to Normal
+#+begin_src emacs-lisp
+  (setq gc-cons-threshold 100000000)
 #+end_src
