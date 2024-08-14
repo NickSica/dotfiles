@@ -1010,18 +1010,13 @@
 
   (setq rust-ts-mode-hook rust-mode-hook)
   (use-package rust-mode
-    :straight (:host github :repo "NickSica/rust-mode")
-    ;;:hook (rust-ts-mode . (lambda () (cl-delete-if (lambda (element) (equal (cdr element) 'rust-ts-mode)) auto-mode-alist)))
     :init
     (setq rust-mode-treesitter-derive t))
 
   ;; TODO: treesitter
   (use-package rustic
-    ;; Remove when ts-mode gets pushed to master
-    ;;:straight (:host github :repo "brotzeit/rustic" :branch "rustic-ts-mode")
+    :after (rust-mode)
     :hook (rustic-mode . sica/rustic-mode-hook)
-    ;;:init
-    ;;(setq rustic-treesitter-derive t)
     :config
     ;; comment to disable rustfmt on save
     (setq rustic-format-on-save t)
@@ -1247,11 +1242,17 @@
     :custom
     (xenops-cache-directory (expand-file-name "cache/data/" user-emacs-directory)))
 
-  ;(use-package cdlatex
-  ;  :hook ((LaTeX-mode . cdlatex-mode)
-  ;         (cdlatex-tab . LaTeX-indent-line)
-  ;         (cdlatex-mode . (lambda ()
-  ;                           (define-key cdlatex-mode-map "_" nil)))))
+  (use-package cdlatex
+    :hook ((LaTeX-mode . cdlatex-mode)
+           (cdlatex-tab . LaTeX-indent-line)
+           (cdlatex-mode . (lambda ()
+                             (define-key cdlatex-mode-map "_" nil))))
+    :config
+    (general-define-key
+     :states 'insert
+     :keymaps 'cdlatex-mode-map
+     "<tab>" 'cdlatex-tab)
+  )
 
   ;(evil-define-minor-mode-key 'insert 'cdlatex-mode-map
   ;  (kbd "<tab>") 'cdlatex-tab)
