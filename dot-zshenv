@@ -48,10 +48,10 @@ export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 
 ### Intel Variables
 # This forces Intel in a multi-GPU setup
-export WLR_DRM_DEVICES=/dev/dri/card1
+#export WLR_DRM_DEVICES=/dev/dri/card1
 #export WLR_RENDER_DRM_DEVICE=/dev/dri/renderD128
-export VDPAU_DRIVE=i915
-export LIBVA_DRIVE_NAME=va_gl
+#export VDPAU_DRIVE=i915
+#export LIBVA_DRIVE_NAME=va_gl
 #unset __GLX_VENDOR_LIBRARY_NAME
 #unset GBM_BACKEND
 
@@ -78,8 +78,3 @@ export DESKTOP_SESSION=sway
 
 ##### Uncomment for headless sway
 export WLR_BACKENDS="headless,libinput"
-
-##### These might be useless now?
-#export WLR_NO_HARDWARE_CURSORS=1
-#export WLR_BACKENDS="headless"
-
