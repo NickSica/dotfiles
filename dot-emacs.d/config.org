@@ -17,32 +17,53 @@
                      gcs-done)))
 #+end_src
 
-** Bootstrap 'straight'
+** Bootstrap 'elpaca'
 #+BEGIN_SRC emacs-lisp
-  (setq straight-base-dir "~/.emacs.d/cache/")
-  ;; TEMPORARY FIX UNTIL STRAIGHT IS FIXED THIS WILL BREAK SOON
-  (setq straight-repository-branch "develop")
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-         (expand-file-name "cache/straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-        (bootstrap-version 6))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
-
-  ;; Use straight.el for setup
-  (straight-use-package 'use-package)
+  (defvar elpaca-installer-version 0.7)
+  (defvar elpaca-directory (expand-file-name "cache/elpaca/" user-emacs-directory))
+  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                                :ref nil :depth 1
+                                :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                                :build (:not elpaca--activate-package)))
+  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+         (build (expand-file-name "elpaca/" elpaca-builds-directory))
+         (order (cdr elpaca-order))
+         (default-directory repo))
+    (add-to-list 'load-path (if (file-exists-p build) build repo))
+    (unless (file-exists-p repo)
+      (make-directory repo t)
+      (when (< emacs-major-version 28) (require 'subr-x))
+      (condition-case-unless-debug err
+          (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                   ,@(when-let ((depth (plist-get order :depth)))
+                                                       (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                   ,(plist-get order :repo) ,repo))))
+                   ((zerop (call-process "git" nil buffer t "checkout"
+                                         (or (plist-get order :ref) "--"))))
+                   (emacs (concat invocation-directory invocation-name))
+                   ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                         "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                   ((require 'elpaca))
+                   ((elpaca-generate-autoloads "elpaca" repo)))
+              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+            (error "%s" (with-current-buffer buffer (buffer-string))))
+        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+    (unless (require 'elpaca-autoloads nil t)
+      (require 'elpaca)
+      (elpaca-generate-autoloads "elpaca" repo)
+      (load "./elpaca-autoloads")))
+  (add-hook 'after-init-hook #'elpaca-process-queues)
+  (elpaca `(,@elpaca-order))
 #+END_SRC
 
-** Bootstrap 'use-package'
+** Install 'use-package' support
 #+begin_src emacs-lisp
-  (use-package straight
-    :custom (straight-use-package-by-default t))
+  (elpaca elpaca-use-package
+    (elpaca-use-package-mode))
+  (setq use-package-always-ensure t)
 #+end_src
 
 ** Emacs Startup Profiler
@@ -58,6 +79,7 @@
 
   ;; Use no-littering to automatically set common paths to the new user-emacs-directory
   (use-package no-littering
+    :ensure (:wait t)
     :init
     (setq no-littering-etc-directory
           (expand-file-name "cache/config/" user-emacs-directory))
@@ -73,19 +95,20 @@
 #+end_src
 
 ** Stop emacs from cluttering my drive
-   #+BEGIN_SRC emacs-lisp
-   (setq make-backup-files nil)
-   (setq auto-save-default nil)
-   #+END_SRC
+#+begin_src emacs-lisp
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+#+end_src
 
 * Early Org Mode
 #+begin_src emacs-lisp
-(use-package org :straight (:type built-in))
+  (use-package org :ensure nil)
 #+end_src
 
 * General(the keybinding package)
 #+begin_src emacs-lisp
   (use-package general
+    :ensure (:wait t)
     :config
     (general-evil-setup t)
 
@@ -181,6 +204,7 @@
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
   (use-package evil
+    :ensure (:wait t)
     :init
     (setq evil-respect-visual-line-mode t)
     (setq evil-want-C-u-scroll t)
@@ -259,7 +283,8 @@
   (use-package dashboard
     :config
     ;; for daemon
-    (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+    (setq initial-buffer-choice 'dashboard-open)
+    ;(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
     (dashboard-setup-startup-hook))
 #+end_src
 ** Centaur Tabs
@@ -310,7 +335,7 @@
   (use-package dired-ranger)
   (use-package dired-collapse)
   (use-package dired
-    :straight nil
+    :ensure nil
     :config
     (setq dired-listing-switches "-agho --group-directories-first"
           dired-omit-files "^\\.[^.].*"
@@ -334,14 +359,15 @@
                             (s-equals? "/gnu/store/" (expand-file-name default-directory)))
                   (all-the-icons-dired-mode 1))
                 (hl-line-mode 1)))
-
-    (evil-collection-define-key 'normal 'dired-mode-map
-      "h" 'dired-single-up-directory
-      "H" 'dired-omit-mode
-      "l" 'dired-single-buffer
-      "y" 'dired-ranger-copy
-      "X" 'dired-ranger-move
-      "p" 'dired-ranger-paste))
+  (general-define-key
+   :states 'normal
+   :keymaps 'dired-mode-map
+   "h" 'dired-single-up-directory
+   "H" 'dired-omit-mode
+   "l" 'dired-single-buffer
+   "y" 'dired-ranger-copy
+   "X" 'dired-ranger-move
+   "p" 'dired-ranger-paste))
 
   (use-package dired-rainbow
     :after dired
@@ -460,6 +486,7 @@
 * Vertico/Consult
   #+begin_src emacs-lisp
     (use-package savehist
+      :ensure nil
       :init
       (savehist-mode)
       :custom
@@ -706,19 +733,19 @@
   #+end_src
 
 * Quickrun
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
   (use-package quickrun
     :init
     (global-set-key (kbd "s-<return>") 'quickrun))
-  #+end_src
+#+end_src
 
 * Spell Check
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
   (use-package langtool
     :config
     (setq langtool-java-classpath "/usr/share/java/languagetool:/usr/share/java/languagetool/*")
     (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar"))
-  #+end_src
+#+end_src
 
 * Languages
 ** General Tweaks
@@ -745,21 +772,21 @@
 #+end_src
 
 ** LSP Mode
+*** LSP Config
 #+begin_src emacs-lisp
   ;;(use-package prog-major-mode
   ;;  :hook (progr-major-mode . dtrt-indent-mode))
   ;;(defun sica/lsp-compl-mode-setup ()
   ;;  (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
   ;;        '(orderless)))
-    ;(setq-local completion-at-point-functions (list (cape-capf-buster
-    ;                                                 #'lsp-completion-at-point))))
-    ;(add-to-list 'completion-at-point-functions #'cape-capf-buster)
-    ;(add-to-list 'completion-at-point-functions #'cape-file)
-    ;(add-to-list 'completion-at-point-functions #'cape-tex)
-    ;(add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    ;(add-to-list 'completion-at-point-functions #'cape-keyword))
-  ;(lsp-completion-mode . sica/lsp-compl-mode-setup)
-
+  ;;(setq-local completion-at-point-functions (list (cape-capf-buster
+  ;;                                                 #'lsp-completion-at-point))))
+  ;;(add-to-list 'completion-at-point-functions #'cape-capf-buster)
+  ;;(add-to-list 'completion-at-point-functions #'cape-file)
+  ;;(add-to-list 'completion-at-point-functions #'cape-tex)
+  ;;(add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  ;;(add-to-list 'completion-at-point-functions #'cape-keyword))
+  ;;(lsp-completion-mode . sica/lsp-compl-mode-setup)
 
   (defun sica/lsp-save-hooks ()
     (add-hook 'before-save-hook #'lsp-format-buffer t t)
@@ -774,27 +801,27 @@
   (use-package lsp-mode
     :commands lsp
     :hook ((lsp-after-initialize . sica/lsp-flycheck-checker)
+           (lsp-mode . lsp-enable-which-key-integration)
            (prog-major-mode . lsp-prog-major-mode-enable)
            (vhdl-mode . lsp-deferred)
            (verilog-mode . lsp-deferred)
-           (c++-mode . lsp-deferred)
-           (c++-mode . sica/lsp-save-hooks)
-           (c-mode . lsp-deferred)
-           (c-mode . sica/lsp-save-hooks)
-           (cuda-mode . lsp-deferred)
+           (c-base-mode . lsp-deferred)
+           (c-base-mode . sica/lsp-save-hooks)
+           (c-ts-base-mode . lsp-deferred)
+           (c-ts-base-mode . sica/lsp-save-hooks)
            (java-mode . lsp-deferred)
+           (java-ts-mode . lsp-deferred)
            (LaTeX-mode . lsp-deferred)
            (bibtex-mode . lsp-deferred)
            (python-mode . lsp-deferred)
            (web-mode . lsp-deferred)
-           (lsp-mode . lsp-enable-which-key-integration)
            (go-mode . lsp-deferred)
+           (go-ts-mode . lsp-deferred)
            (rustic-mode . lsp-deferred)
-           (rustic-mode . lsp-inlay-hints-mode)
-           (rust-mode . lsp-deferred))
+           (rustic-mode . lsp-inlay-hints-mode))
     :bind (:map evil-insert-state-map
-                ("M-TAB" . indent-for-tab-command)
-                ("C-TAB" . tab-to-tab-stop))
+                  ("M-TAB" . indent-for-tab-command)
+                  ("C-TAB" . tab-to-tab-stop))
     :init
     (sica/leader-key-def
       "l" '(:ignore t :which-key "lsp")
@@ -837,8 +864,22 @@
     ;; C/C++ Config
     (lsp-clangd-binary-path "/usr/bin/clangd")
     :config
+    ;; TODO: Reevaluate if verilog-ts-mode is added to lsp-mode
+    (require 'lsp-verilog)
+    (add-to-list 'lsp-language-id-configuration
+                 '(verilog-ts-mode . "verilog"))
+
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection lsp-clients-verible-executable)
+                      :major-modes '(verilog-ts-mode)
+                      :activation-fn (lsp-activate-on "verilog")
+                      :server-id 'lsp-verilog-verible))
+
     (define-key lsp-mode-map (kbd "C-c C-l") lsp-command-map))
 
+  #+end_src
+*** LSP UI
+#+begin_src emacs-lisp
   (use-package lsp-ui
     :after lsp-mode
     :commands lsp-ui-mode
@@ -857,7 +898,9 @@
     :after (lsp-mode treemacs)
     :config
     (lsp-treemacs-sync-mode 1))
-
+#+end_src
+*** DAP Mode and Others
+#+begin_src emacs-lisp
   (use-package dap-mode
     :after lsp-mode
     :custom
@@ -872,6 +915,41 @@
   (use-package eldoc-box
     :hook (lsp-mode . eldoc-box-hover-mode))
 #+end_src
+*** Emacs LSP Booster
+#+begin_src emacs-lisp
+  (defun lsp-booster--advice-json-parse (old-fn &rest args)
+    "Try to parse bytecode instead of json."
+    (or
+     (when (equal (following-char) ?#)
+       (let ((bytecode (read (current-buffer))))
+         (when (byte-code-function-p bytecode)
+           (funcall bytecode))))
+     (apply old-fn args)))
+
+  (advice-add (if (progn (require 'json)
+                         (fboundp 'json-parse-buffer))
+                  'json-parse-buffer
+                'json-read)
+              :around
+              #'lsp-booster--advice-json-parse)
+
+  (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+    "Prepend emacs-lsp-booster command to lsp CMD."
+    (let ((orig-result (funcall old-fn cmd test?)))
+      (if (and (not test?)                             ;; for check lsp-server-present?
+               (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+               lsp-use-plists
+               (not (functionp 'json-rpc-connection))  ;; native json-rpc
+               (executable-find "emacs-lsp-booster"))
+          (progn
+            (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
+              (setcar orig-result command-from-exec-path))
+            (message "Using emacs-lsp-booster for %s!" orig-result)
+            (cons "emacs-lsp-booster" orig-result))
+        orig-result)))
+
+  (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
+#+end_src
 
 ** Tree-Sitter
 #+begin_src emacs-lisp
@@ -881,7 +959,7 @@
   ;;    (add-to-list 'major-mode-remap-alist mapping)))
 
   (use-package treesit
-    :straight (:type built-in)
+    :ensure nil
     :config
     (setq treesit-font-lock-level 4)
     (setq treesit-extra-load-path '(expand-file-name "cache/data/treesit/" user-emacs-directory)))
@@ -915,29 +993,10 @@
 
 ** Verilog/SystemVerilog
 #+begin_src emacs-lisp
+  ;; TODO: Maybe check out wavedrom-mode???
+
   (defun sica/verilog-mode-hook()
-    (setq tab-width 2))
-
-  (custom-set-variables
-   '(lsp-clients-svlangserver-launchConfiguration "verilator -sv --lint-only -Wall")
-   '(lsp-clients-svlangserver-formatCommand "verible-verilog-format"))
-
-  ;; Project specific settings go in .dir-locals.el- might be fine here
-  ;;((verilog-mode (lsp-clients-svlangserver-includeIndexing . ("src/**/*.{sv,svh}"))
-  ;;(lsp-clients-svlangserver-excludeIndexing . ("src/test/**/*.{sv,svh}"))))
-  ;;(lsp-clients-svlangserver-workspace-additional-dirs . ("/some/lib/path"))))
-
-  (add-to-list 'auto-mode-alist
-               '("\\.s?v\\'" . verilog-ts-mode))
-
-  (use-package verilog-mode)
-
-  (use-package verilog-ts-mode
-    :after verilog-mode
-    :hook (verilog-ts-mode . sica/verilog-mode-hook)
-    :bind (:map verilog-ts-mode-map
-                ("DEL" . 'evil-delete-backward-char-and-join))
-    :config
+    (setq tab-width 2)
     (setq verilog-indent-level 2)
     (setq verilog-indent-level-behavioral 2)
     (setq verilog-indent-level-declaration 2)
@@ -948,11 +1007,93 @@
     (setq verilog-auto-lineup nil)
     (setq verilog-auto-newline nil)
     (setq verilog-indent-lists nil))
+
+
+  ;; Project specific settings go in .dir-locals.el- might be fine here
+  ;;((verilog-mode (lsp-clients-svlangserver-includeIndexing . ("src/**/*.{sv,svh}"))
+  ;;(lsp-clients-svlangserver-excludeIndexing . ("src/test/**/*.{sv,svh}"))))
+  ;;(lsp-clients-svlangserver-workspace-additional-dirs . ("/some/lib/path"))))
+
+  (use-package verilog-mode
+    :hook (verilog-mode . sica/verilog-mode-hook)
+    :config
+    (setq lsp-clients-svlangserver-launchConfiguration "verilator -sv --lint-only -Wall")
+    (setq lsp-clients-svlangserver-formatCommand "verible-verilog-format"))
+
+  (use-package verilog-ts-mode
+    :after verilog-mode
+    :mode ("\\.sv\\'"
+           "\\.v\\'"))
+
+  (use-package verilog-ext
+    :hook (verilog-mode . verilog-ext-mode)
+    :init
+    ;; Comment out/remove the ones you do not need
+    (setq verilog-ext-feature-list
+          '(font-lock
+            xref
+            capf
+            hierarchy
+            ;;eglot
+            lsp
+            ;;lsp-bridge
+            ;;lspce
+            flycheck
+            beautify
+            navigation
+            template
+            formatter
+            compilation
+            imenu
+            which-func
+            hideshow
+            typedefs
+            time-stamp
+            block-end-comments
+            ports))
+    :config
+    (verilog-ext-mode-setup))
+
+  (use-package fpga
+    :init
+    (setq fpga-feature-list '(xilinx cadence synopsys yosys siemens)))
+
+  (general-define-key
+   :keymaps 'verilog-mode-map
+   "DEL" 'evil-delete-backward-char-and-join)
 #+end_src
 
 ** VHDL
 #+begin_src emacs-lisp
   (use-package vhdl-ts-mode)
+
+  (use-package vhdl-ext
+    :hook (vhdl-mode . vhdl-ext-mode)
+    :init
+    ;; Comment out/remove the ones you do not need
+    (setq vhdl-ext-feature-list
+          '(font-lock
+            xref
+            capf
+            hierarchy
+            ;;eglot
+            lsp
+            ;;lsp-bridge
+            ;;lspce
+            flycheck
+            beautify
+            navigation
+            template
+            compilation
+            imenu
+            which-func
+            hideshow
+            time-stamp
+            ports))
+    :config
+    (vhdl-ext-mode-setup))
+
+  ;; Check out VUnit mode maybe?
 #+end_src
 
 ** Emacs Lisp
@@ -961,7 +1102,7 @@
     (setq tab-width 2))
 
   (use-package emacs-lisp-mode
-    :straight nil
+    :ensure nil
     :after flycheck-mode
     :hook ((emacs-lisp-mode . flycheck-mode)
            (emacs-lisp-mode . sica/elisp-hook)))
@@ -993,55 +1134,45 @@
 
 ** Rust
 #+begin_src emacs-lisp
-  (sica/leader-key-def
-    :states '(normal visual)
-    :keymaps 'rustic-mode-map
-    "s"  '(:ignore t :which-key "Rust")
-    "ss" 'lsp-rust-analyzer-status
-    "sf" 'rustic-format-buffer)
+    (sica/leader-key-def
+      :states '(normal visual)
+      :keymaps 'rustic-mode-map
+      "s"  '(:ignore t :which-key "Rust")
+      "ss" 'lsp-rust-analyzer-status
+      "sf" 'rustic-format-buffer)
 
   (defun sica/rustic-mode-hook ()
     (setq tab-width 4)
     (setq indent-tabs-mode nil))
 
-  ;;(require 'rust-ts-mode)
-  (use-package rust-ts-mode
-    :straight (:type built-in))
-
-  (setq rust-ts-mode-hook rust-mode-hook)
   (use-package rust-mode
+    :defer t
     :init
     (setq rust-mode-treesitter-derive t))
 
   ;; TODO: treesitter
   (use-package rustic
-    :after (rust-mode)
+    :after rust-mode
+    :mode ("\\.rs\\'" . rustic-mode)
     :hook (rustic-mode . sica/rustic-mode-hook)
+
+    ;;:hook ((rustic-mode . sica/rustic-mode-hook)
+    ;;       (rust-ts-mode . rustic-mode))
     :config
     ;; comment to disable rustfmt on save
     (setq rustic-format-on-save t)
     (setq rustic-format-on-save-method 'rustic-format-buffer)
     (setq rustic-default-clippy-arguments "--all-features")
     (setq rustic-clippy-arguments "--all-features")
-    (require 'dap-gdb-lldb)
-    (dap-register-debug-template "Rust::GDB Run Configuration"
-                                 (list :type "gdb"
-                                       :request "launch"
-                                       :name "GDB::Run"
-                                       :gdbpath "rust-gdb"
-                                       :target nil
-                                       :cwd nil)))
-  (setq rustic-rustfmt-bin "/usr/bin/rustfmt")
-  (setq sica/my-rustic-tsauto-config
-        (make-treesit-auto-recipe
-         :lang 'rust
-         :ts-mode 'rustic-mode
-         :remap '(rustic-mode)
-         :url "https://github.com/tree-sitter/tree-sitter-rust"
-         :revision "master"))
-         ;;:source-dir (expand-file-name "cache/data/treesit-repos/" user-emacs-directory)))
-  (add-to-list 'treesit-auto-recipe-list sica/my-rustic-tsauto-config)
-  (add-to-list 'global-treesit-auto-modes 'rustic-mode)
+    ;;(require 'dap-gdb-lldb)
+    ;;(dap-register-debug-template "Rust::GDB Run Configuration"
+    ;;                             (list :type "gdb"
+    ;;                                   :request "launch"
+    ;;                                   :name "GDB::Run"
+    ;;                                   :gdbpath "rust-gdb"
+    ;;                                   :target nil
+    ;;                                   :cwd nil))
+    (setq rustic-rustfmt-bin "/usr/bin/rustfmt"))
   #+end_src
 
 ** Go
@@ -1055,7 +1186,7 @@
 #+begin_src emacs-lisp
   (sica/leader-key-def
     :states '(normal visual)
-    :keymaps 'c-c++-mode-map
+    :keymaps '(c-base-mode-map c-ts-base-mode-map)
     "s"  '(:ignore t :which-key "C/C++")
     "si" 'c-indent-line-or-region)
 
@@ -1070,18 +1201,13 @@
       (setq c-basic-offset 2)
       (setq indent-tabs-mode nil)))
 
-  (add-to-list 'auto-mode-alist '("\\.cu\\'" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.c\\'" . c-mode))
-  (add-to-list 'auto-mode-alist '("\\.cpp\\'" . c++-mode))
-  (add-to-list 'auto-mode-alist '("\\.cc\\'" . c++-mode))
-
-  (setq c-ts-mode-hook c-mode-hook)
-  (setq c++-ts-mode-hook c++-mode-hook)
-
   (use-package c-mode
-    :straight nil
-    :hook (c-mode . sica/c-mode-hook)
+    :ensure nil
+    :mode ("\\.cu\\'"
+           "\\.h\\'"
+           "\\.c\\'")
+    :hook ((c-mode . sica/c-mode-hook)
+           (c-ts-mode . sica/c-mode-hook))
     :bind (:map c-mode-map
                 ("DEL" . evil-delete-backward-char-and-join))
     :config
@@ -1089,8 +1215,11 @@
 
 
   (use-package c++-mode
-    :straight nil
-    :hook (c++-mode . sica/c-mode-hook)
+    :ensure nil
+    :mode ("\\.cpp\\'"
+           "\\.cc\\'")
+    :hook ((c++-mode . sica/c-mode-hook)
+           (c++-ts-mode . sica/c-mode-hook))
     :config
     (require 'dap-cpptools))
     ;;(define-key c-mode-base-map (kbd "TAB") 'tab-to-tab-stop)
@@ -1117,17 +1246,12 @@
     (setq-default js-indent-level 2)
     (setq-default evil-shift-width js-indent-level)
     (setq-default tab-width 2))
-  (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescript-mode))
-  (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-
 
   (use-package js2-mode
+    :mode "\\.jsx?\\'"
+    :interpreter "node"
     :init
     '(js2-mode . (js-ts "--strict"))
-
-    ;; Use js2-mode for Node scripts
-    (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode))
 
     ;; Don't use built-in syntax checking
     (setq js2-mode-show-strict-warnings nil)
@@ -1136,12 +1260,14 @@
     (add-hook 'js-base-mode-hook #'sica/set-js-indentation))
 
   (use-package typescript-mode
+    :mode "\\.tsx?\\'"
     :init
     '(typescript-mode . (js-ts "--strict"))
     :config
     (setq typescript-indent-level 2))
 
   (use-package vue-mode
+    :mode "\\.vue\\'"
     :init
     '(typescript-mode . (js-ts "--strict"))
     :config
@@ -1152,15 +1278,6 @@
 
 ** HTML/CSS
 #+begin_src emacs-lisp
-  (use-package emmet-mode)
-  (use-package web-mode)
-
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
-
   (defun sica/web-mode-hook ()
       (setq web-mode-markup-indent-offset 2)
       (setq web-mode-css-indent-offset 2)
@@ -1168,10 +1285,19 @@
       (setq-local indent-tabs-mode nil)
   )
 
+  (use-package emmet-mode)
+  (use-package web-mode
+    :hook (web-mode sica/web-mode-hook)
+    :mode ("\\.html?\\'"
+           "\\.css\\'"
+           "\\.js\\'"
+           "\\.ts\\'"
+           "\\.php\\'"))
+
+
+
   ; TODO: uncomment when web ts mode
   ;(setq web-ts-mode-hook web-mode-hook)
-
-  (add-hook 'web-mode-hook #'sica/web-mode-hook)
 #+end_src
 
 ** Haskell
@@ -1200,6 +1326,7 @@
 
   ;; TODO: revisit for treesitter mode hooks
   (use-package auctex
+    :mode ("\\.tex\\'" . LaTeX-mode)
     :hook ((LaTeX-mode . turn-on-reftex)
            (LaTeX-mode . visual-line-mode)
            (LaTeX-mode . flyspell-mode)
@@ -1224,9 +1351,8 @@
   ;;  :config
   ;;  (require 'lsp-latex)) ;; Only supports texlab
 
-  (add-to-list 'auto-mode-alist '("\\.tex\\'" . LaTeX-mode))
-
   (use-package reftex
+    :ensure nil
     :init
     (setq reftex-plug-into-AUCTeX t)
     :config
@@ -1259,7 +1385,7 @@
 
   ;; Array/tabular input with org-tables and cdlatex
   (use-package org-table
-    :straight nil
+    :ensure nil
     :after cdlatex
     :bind (:map orgtbl-mode-map
                 ("<tab>" . lazytab-org-table-next-field-maybe)
@@ -1286,7 +1412,7 @@
 
   (use-package lazytab
     :after org-table
-    :straight (:host github :repo "karthink/lazytab"))
+    :ensure (:host github :repo "karthink/lazytab"))
 
   (use-package evil-tex
     :hook (LaTeX-mode . evil-tex-mode))
@@ -1297,8 +1423,7 @@
 * Natural Language Server
 #+begin_src emacs-lisp
   (use-package lsp-ltex
-    :hook (text-mode . (lambda()
-                         (require 'lsp-ltex)))
+    :hook (text-mode . lsp-ltex)
     :init
     (setq lsp-ltex-version "16.0.0"))
 #+end_src
